@@ -15,9 +15,31 @@ function ContextMenu({
 function ContextMenuTrigger({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
+  const triggerRef = React.useRef<HTMLDivElement>(null);
+  
+  // This function will handle the click event
+  const handleClick = React.useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    
+    // Create and dispatch a context menu event
+    const contextMenuEvent = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    });
+    
+    triggerRef.current?.dispatchEvent(contextMenuEvent);
+  }, []);
+
   return (
-    <ContextMenuPrimitive.Trigger data-slot="context-menu-trigger" {...props} />
-  )
+    <ContextMenuPrimitive.Trigger 
+      data-slot="context-menu-trigger" 
+      ref={triggerRef}
+      onClick={handleClick}
+      {...props} 
+    />
+  );
 }
 
 function ContextMenuGroup({

@@ -1,75 +1,41 @@
 // This layout wraps all dashboard pages
-
 import BreadcrumbNav from "@/components/dashboard/BreadCrumb";
-import { Sidebar } from "@/components/dashboard/Sidebar"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-
-// import { IconType } from "react-icons"; // 👈 import the proper type
-// import { FaChartBar, FaClipboardList, FaTachometerAlt, FaUserGraduate, FaUsers } from "react-icons/fa";
-
-// const menuItems: {
-//   title: string;
-//   url: string;
-//   icon: IconType; // 👈 specify this instead of ComponentType or any
-// }[] = [
-//   {
-//     title: "Dashboard",
-//     url: "/dashboard",
-//     icon: FaTachometerAlt
-//   },
-//   {
-//     title: "User Management",
-//     url: "/user-management",
-//     icon: FaUsers
-//   },
-//   {
-//     title: "Student Management",
-//     url: "/student-management",
-//     icon: FaUserGraduate
-//   },
-//   {
-//     title: "Attendance",
-//     url: "/attendance",
-//     icon: FaClipboardList
-//   },
-//   {
-//     title: "Report",
-//     url: "/report",
-//     icon: FaChartBar
-//   }
-// ];
-
-
-// const userProfile = {
-//   avatarUrl: "https://example.com/avatar.jpg",
-//   name: "John Doe",
-//   email: "email@example.com"
-// };
+import { Sidebar } from "@/components/dashboard/Sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import FilterSearchBar from './../../components/dashboard/FilterComponent';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+    <div className="w-full">
+      <div className="flex h-screen overflow-hidden w-full">
         {/* Sidebar */}
         <Sidebar
-      items={[
-        { title: "Dashboard", url: "/dashboard", iconName: "dashboard" },
-        { title: "Analytics", url: "/analytics", iconName: "analytics" },
-        { title: "Users", url: "/users", iconName: "users" },
-      ]}
-      user={{
-        name: "Austin Dev",
-        email: "austindev214@gmail.com",
-        avatarUrl: "https://i.pravatar.cc/100",
-      }}
-    />
+          items={[
+            { title: "Dashboard", url: "/dashboard", iconName: "dashboard" },
+            { title: "Analytics", url: "/analytics", iconName: "analytics" },
+            { title: "Users", url: "/users", iconName: "users" },
+          ]}
+          user={{
+            name: "Austin Dev",
+            email: "austindev214@gmail.com",
+            avatarUrl: "https://i.pravatar.cc/100",
+          }}
+        />
 
         {/* Main section */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 bg-gray-200 flex flex-col overflow-hidden !px-4 !py-2">
           {/* Sticky header with trigger and breadcrumb */}
-          <header className="sticky top-0 z-10 bg-white border-b px-6 py-3 flex items-center justify-between">
-            <SidebarTrigger />
-            <BreadcrumbNav />
+          <header className="sticky w-full top-0 z-10 bg-white border-b px-6 py-3 flex items-center justify-between">
+            {/* Left Side */}
+            <div className="flex items-center space-x-4">
+              <SidebarTrigger />
+              <BreadcrumbNav />
+            </div>
+
+            {/* Right Side (Filter + Search inputs) */}
+            <div className="flex-end">
+              <FilterSearchBar />
+            </div>
           </header>
 
           {/* Main content */}
@@ -78,6 +44,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </main>
         </div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }
