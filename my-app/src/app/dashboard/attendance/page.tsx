@@ -1,19 +1,22 @@
 'use client'
 import Link from 'next/link'
 
-const classes = ['math101', 'science202', 'english303'];
+const classes = Array.from({ length: 120 }, (_, i) => `class${i + 1}`);
 
 export default function Classlist() {
   return (
-    <div>
-      <h2>Select a Class</h2>
-      <ul>
+    <div className="bg-white min-h-screen p-5">
+      <div className="grid overflow-auto max-h-[calc(100vh-5rem)] mx-auto !px-[2.5%] !pt-[2%] grid-cols-4 gap-4 pb-[10%]">
         {classes.map(cls => (
-          <li key={cls}>
-            <Link href={`/dashboard/attendance/${cls}`}>{cls}</Link>
-          </li>
+          <Link 
+            key={cls} 
+            href={`/dashboard/attendance/${cls}`} 
+            className="flex items-center justify-center hover:bg-gray-500 bg-gray-300 text-white no-underline !p-[2rem] rounded-md text-center font-bold"
+          >
+            {cls}
+          </Link>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
