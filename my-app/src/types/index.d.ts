@@ -29,3 +29,12 @@ declare type VerifyEmailResponse = {
   success: boolean;
   message: string;
 };
+
+declare type UserResponse = {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+};

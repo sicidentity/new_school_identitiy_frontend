@@ -7,27 +7,35 @@ import Link from 'next/link';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormSchema } from '@/lib/utils';
+import { CreateUserSchema } from '@/lib/utils';
+import { Form, FormField, FormItem, FormControl } from '@/components/ui/form';
 import {
-  Form
-} from '@/components/ui/form';
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { IoMail } from "react-icons/io5";
 import { FaLock } from "react-icons/fa6";
-import { SignUp } from '@/lib/actions/user.actions';
+import { CreateUser } from '@/lib/actions/user.actions';
 
-const AdminRegister = () => {
+const CreateUserPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
-  const formSchema = FormSchema();
+  const formSchema = CreateUserSchema();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
-      password: ''
+      password: "",
+      role: ""
     },
   });
 
@@ -36,11 +44,10 @@ const AdminRegister = () => {
     setErrorMessage("");
 
     try {
-      const newUser = await SignUp(data.name, data.email, data.password);
+      const newUser = await CreateUser(data.name, data.email, data.password, data.role);
 
       if (newUser) {
-        localStorage.setItem('userEmail', data.email);
-        router.push('/verify_email');
+        router.push('/');
       }
     } catch (error: unknown) {
       console.error("Error during registration:", error);
@@ -123,17 +130,46 @@ const AdminRegister = () => {
             {form.formState.errors.password && (
               <p className="text-red-500 text-sm">{form.formState.errors.password.message}</p>
             )}
+
+            <label className="text-sm text-[#4a5568] font-semibold mb-[-1rem]">Role</label>
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger className="w-full border border-[#4a5568] rounded-sm h-[2.75rem]">
+                        <SelectValue placeholder="Select Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Role</SelectLabel>
+                          <SelectItem value="SECURITY">SECURITY</SelectItem>
+                          <SelectItem value="TEACHER">TEACHER</SelectItem>
+                          <SelectItem value="ADMIN">ADMIN</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {form.formState.errors.role && (
+              <p className="text-red-500 text-sm">{form.formState.errors.role.message}</p>
+            )}
           </div>
+
           <button 
             type="submit" 
             disabled={isLoading} 
             className="mt-6 bg-[#258094] text-white font-bold py-2 px-4 rounded-md w-[30vw] cursor-pointer"
           >
-            {isLoading ? 'Registering...' : 'Register'}
+            {isLoading ? 'Creating...' : 'Create'}
           </button>
           <div className="flex flex-col items-center justify-center mt-[2rem] w-[30vw]">
-            <p className="text-[#000] text-justify text-lg"> Already have an account? 
-              <Link href="/login" className="text-[#4a5568] font-semibold">  Login</Link>
+            <p className="text-[#000] text-justify text-lg">Return 
+              <Link href="/login" className="text-[#4a5568] font-semibold">  Home</Link>
             </p>
           </div>
         </div>
@@ -142,4 +178,4 @@ const AdminRegister = () => {
   );
 };
 
-export default AdminRegister;
+export default CreateUserPage;

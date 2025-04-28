@@ -260,3 +260,81 @@ export const VerifyEmail = async (email: string, verificationCode: string): Prom
     throw error;
   }
 };
+
+export const CreateUser = async (name: string, email: string, password: string, role: string): Promise<UserResponse> => {
+  try {
+    if (!API_URL) {
+      console.error("API URL is not configured");
+      throw new Error("API URL is not configured");
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token');
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/auth/create`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token.value}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password, role }),
+      cache: 'no-store'
+    });
+
+    const responseClone = response.clone();
+
+    if (!response.ok) {
+      const errorData = await responseClone.json();
+      console.error('Error in create user response', errorData);
+    }
+
+    const data: UserResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Create user error:", error);
+    throw error;
+  }
+};
+
+export const DeleteUser = async (userId: string): Promise<{ message: string }> => {
+  try {
+    if (!API_URL) {
+      console.error("API URL is not configured");
+      throw new Error("API URL is not configured");
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token');
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/auth/delete/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token.value}`,
+        "Content-Type": "application/json",
+      },
+      cache: 'no-store'
+    });
+
+    const responseClone = response.clone();
+
+    if (!response.ok) {
+      const errorData = await responseClone.json();
+      console.error('Error in delete user response', errorData);
+      throw new Error(errorData.message || "Failed to delete user");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Delete user error:", error);
+    throw error;
+  }
+};

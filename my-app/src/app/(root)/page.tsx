@@ -2,6 +2,7 @@
 
 import { SignOut } from '@/lib/actions/user.actions';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function Home() {
   return (
     <div className="">
       <button onClick={handleLogOut}> Log Out</button>
+      <Link href="/create_user">Create user</Link>
     </div>
   );
 }
