@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SECURITY
+}
+
+model User {
+  id        String   @id @default(uuid())
+  role      Role?
+  email     String   @unique
+  name          String
+  resetToken      String?
+  resetTokenExpiry DateTime? 
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Student {
+  id           Int             @id // Changed to Int for 7-digit numeric ID
+  name         String
+  age          Int
+  classId      String          @map("class_id")
+  parentId     String          @map("parent_id")
+  picture      String?        
+  class        Class           @relation(fields: [classId], references: [id])
+  parent       Parent          @relation(fields: [parentId], references: [id])
+  qrCodes      QRCode[]       
+  attendances  Attendance[]    
+  smsNotifications SMSNotification[]
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@map("students")
+}
+
+model Class {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  students    Student[]   
+  attendances Attendance[]
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("classes")
+}
+
+model Parent {
+  id           String          @id @default(uuid())
+  name         String
+  phone        String          @unique
+  email        String          @unique
+  students     Student[]       
+  smsNotifications SMSNotification[]
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@map("parents")
+}
+
+model Attendance {
+  id           String    @id @default(uuid())
+  studentId    Int       @map("student_id") // Changed to Int to match Student.id
+  classId      String    @map("class_id")
+  checkInTime  DateTime  @map("check_in_time")
+  checkOutTime DateTime? @map("check_out_time")
+  year         Int
+  day          Int
+  student      Student   @relation(fields: [studentId], references: [id])
+  class        Class     @relation(fields: [classId], references: [id])
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("attendances")
+}
+
+model QRCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  studentId Int      @map("student_id") // Changed to Int to match Student.id
+  student   Student  @relation(fields: [studentId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("qr_codes")
+}
+
+model SMSNotification {
+  id        String    @id @default(uuid())
+  studentId Int       @map("student_id") // Changed to Int to match Student.id
+  parentId  String    @map("parent_id")
+  status    String    
+  message   String    
+  sentAt    DateTime  @default(now()) @map("sent_at")
+  student   Student   @relation(fields: [studentId], references: [id])
+  parent    Parent    @relation(fields: [parentId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("sms_notifications")
+}
+
+

@@ -19,7 +19,7 @@ export default function FilterSearchBar() {
         <Input
           type="text"
           placeholder="Filter Data"
-          className="rounded-r-none !rounded-l-sm border-r-0 !bg-emerald-800"
+          className="rounded-r-none !rounded-l-sm border-r-0 !bg-white"
         />
         <ContextMenu>
           <ContextMenuTrigger asChild>
@@ -43,10 +43,10 @@ export default function FilterSearchBar() {
         <Input
           type="text"
           placeholder="Search"
-          className="rounded-r-none !rounded-l-sm !bg-amber-600 border-r-0"
+          className="rounded-r-none !rounded-l-sm !bg-white border-r-0"
         />
         <div
-          className="!bg-amber-800 flex items-center justify-center w-9 px-2 text-gray-500  border border-input rounded-r-sm shadow-xs 
+          className="!bg-white !outline  outline-gray-200 flex items-center justify-center w-9 px-2 text-gray-500  border border-input rounded-r-sm shadow-xs 
           transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
         >
           <FaSearch size={14} />
@@ -55,7 +55,7 @@ export default function FilterSearchBar() {
 
       {/* Long button that mimics input look */}
       <Button
-        className="h-9 px-4 w-[25%] !rounded-md !bg-amber-700 !hover:bg-green-600 text-white  shadow-xs transition-all border border-input focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+        className="h-9 px-4 w-[25%] !rounded-md !bg-teal-green hover:bg-green-600 text-white  shadow-xs transition-all border border-input focus-visible:ring-ring/50 focus-visible:ring-[3px]"
         variant="green"
       >
         Create New User

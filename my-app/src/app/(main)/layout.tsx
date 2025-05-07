@@ -1,25 +1,28 @@
 // This layout wraps all dashboard pages
-import BreadcrumbNav from "@/components/dashboard/BreadCrumb";
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import BreadcrumbNav from "@/components/main/BreadCrumb";
+import FilterSearchBar from "@/components/main/FilterComponent";
+import { Sidebar } from "@/components/main/Sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import FilterSearchBar from './../../components/dashboard/FilterComponent';
+// import FilterSearchBar from './../../components/dashboard/FilterComponent';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full">
-      <div className="flex !pt-[2%] h-screen overflow-hidden w-full">
+      <div className="flex !pt-[2%] min-h-screen overflow-hidden w-full">
         {/* Sidebar */}
         <Sidebar
           items={[
             { title: "Dashboard", url: "/dashboard", iconName: "dashboard" },
-            { title: "Analytics", url: "/analytics", iconName: "analytics" },
-            { title: "Users", url: "/users", iconName: "users" },
+            { title: "User Management", url: "/user-management", iconName: "users" },
+            { title: "Student Management", url: "/student-management", iconName: "student" },
+            { title: "Attendance", url: "/attendance", iconName: "attendance" },
+            { title: "Report", url: "/report", iconName: "report" },
           ]}
           user={{
             name: "Austin Dev",
             email: "austindev214@gmail.com",
             avatarUrl: "https://i.pravatar.cc/100",
-          }}
+          }} // edit for login in user details 
         />
 
         {/* Main section */}
@@ -40,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </header>
 
             {/* Main content */}
-            <main className="flex-1 !bg-gray-600 overflow-auto !pt-8 ">
+            <main className="flex-1 overflow-auto !pt-8 ">
               {children}
             </main>
             </div>

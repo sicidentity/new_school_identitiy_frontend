@@ -28,14 +28,16 @@ import {
 } from "../ui/tooltip";
 import { FiSettings } from "react-icons/fi";
 import { FaTachometerAlt } from "react-icons/fa";
-import { BsGraphUp } from "react-icons/bs";
-import { MdGroup } from "react-icons/md";
+import { MdManageAccounts } from "react-icons/md";
+import { FaUserGraduate } from "react-icons/fa";
+import { IoCalendarOutline } from "react-icons/io5";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 import { ComponentType } from "react";
 
 type SidebarItem = {
   title: string;
   url: string;
-  iconName: "dashboard" | "analytics" | "users";
+  iconName: "dashboard" | "attendance" | "users" | "student" | "report";
 };
 
 type SidebarProps = {
@@ -49,8 +51,10 @@ type SidebarProps = {
 
 const iconMap: Record<SidebarItem["iconName"], ComponentType<{ className?: string }>> = {
   dashboard: FaTachometerAlt,
-  analytics: BsGraphUp,
-  users: MdGroup,
+  users: MdManageAccounts, // For "User Management"
+  student: FaUserGraduate, // For "Student Management"
+  attendance: IoCalendarOutline,
+  report: HiOutlineDocumentReport,
 };
 
 export function Sidebar({ items, user }: SidebarProps) {
@@ -58,12 +62,12 @@ export function Sidebar({ items, user }: SidebarProps) {
   const isCollapsed = state === "collapsed";
 
   return (
-    <SidebarRoot side="left" variant="sidebar" collapsible="icon" className="group">
-      <SidebarContent className="h-screen !p-[7%] flex flex-col justify-between bg-grey text-white w-64 group-data-[collapsed=true]:w-20 transition-all duration-300">
+    <SidebarRoot side="left" variant="sidebar" collapsible="icon" className="group !bg-white">
+      <SidebarContent className="h-screen !p-[7%] flex flex-col justify-between bg-gray text-white w-64 group-data-[collapsed=true]:w-20 transition-all duration-300">
         <div className="flex flex-col h-full">
           <SidebarHeader className={`flex ${isCollapsed ? 'justify-center' : 'justify-start'} !mb-[20%]`}>
             <div className={`p-2 rounded-full transition-all duration-300 flex items-center justify-center ${isCollapsed ? 'w-10 h-10' : 'w-full'}`}>
-              <Image src="/globe.svg" alt="Sidebar Logo" width={isCollapsed ? 24 : 30} height={isCollapsed ? 24 : 30} className="transition-all duration-300" />
+              <Image src="/logo.svg" alt="Sidebar Logo" width={isCollapsed ? 24 : 30} height={isCollapsed ? 24 : 30} className="transition-all duration-300" />
             </div>
           </SidebarHeader>
 
@@ -79,7 +83,7 @@ export function Sidebar({ items, user }: SidebarProps) {
                           <TooltipProvider delayDuration={100}>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <SidebarMenuButton className="hover:bg-green-800 !pl-[25%] transition-all duration-300" asChild>
+                                <SidebarMenuButton className="hover:!bg-teal-green !pl-[25%] transition-all duration-300" asChild>
                                   <a href={item.url}>
                                     <Icon className="min-w-[1rem]" />
                                   </a>
@@ -91,7 +95,7 @@ export function Sidebar({ items, user }: SidebarProps) {
                             </Tooltip>
                           </TooltipProvider>
                         ) : (
-                          <SidebarMenuButton className="hover:bg-green-800 !pl-[5%] transition-all duration-300" asChild>
+                          <SidebarMenuButton className="hover:!bg-teal-green !pl-[5%] transition-all duration-300" asChild>
                             <a href={item.url} className="flex items-center gap-2">
                               <Icon className="min-w-[1rem]" />
                               <span>{item.title}</span>
@@ -174,7 +178,7 @@ export function Sidebar({ items, user }: SidebarProps) {
                         <Avatar className="h-7 w-7 flex-shrink-0">
                           <AvatarImage src={user.avatarUrl} />
                           <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
+                        </Avatar>hover
                         <div className="flex flex-col">
                           <span className="text-sm font-medium truncate">{user.name}</span>
                           <span className="text-xs truncate">{user.email}</span>
