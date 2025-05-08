@@ -8,7 +8,7 @@ const PanelLayoutContent = ({ children }: { children: React.ReactNode }) => {
   
   return (
     <div className="flex flex-col min-h-screen w-[100vw]">
-      <div className="bg-blue-100 p-4 w-full">
+      <div className="w-full">
         {isLoggedIn ? (
           <div className="flex justify-between items-center">
             {children}
@@ -29,7 +29,7 @@ const PanelLayoutContent = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const PanelLayout = ({ children }: { children: React.ReactNode }) => {
+const AuthPanelLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <LoggedInProvider initialState={false}>
       <PanelLayoutContent>{children}</PanelLayoutContent>
@@ -37,4 +37,4 @@ const PanelLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default PanelLayout;
+export default AuthPanelLayout;

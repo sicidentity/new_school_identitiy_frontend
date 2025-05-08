@@ -1,4 +1,5 @@
-import PanelLayout from '@/components/UserPanel';
+import AuthPanelLayout from '@/components/UserPanel';
+import PanelLayout from '@/components/PanelLayout';
 
 export default async function RootLayout({
   children,
@@ -7,12 +8,12 @@ export default async function RootLayout({
 }>) {
 
   return (
-    <main className="flex h-screen w-full font-inter">
-      <div className="flex size-full flex-col">
+    <main className="flex h-screen w-[100vw] font-inter">
+      <AuthPanelLayout>
         <PanelLayout>
           {children}
         </PanelLayout>
-      </div>
+      </AuthPanelLayout>
     </main>
   );
 }
