@@ -1,4 +1,4 @@
-import { StatsTabsProps } from "@/app/interface/testapi";
+import { StatsTabsProps } from "@/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { FaUsers, FaBookOpen, FaCalendarAlt } from "react-icons/fa";
 

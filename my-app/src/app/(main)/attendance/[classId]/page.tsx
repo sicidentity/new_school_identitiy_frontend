@@ -1,5 +1,5 @@
 'use client'
-import { Student } from "@/app/interface/dashboard"
+import { DashboardStudent } from "@/types"
 import { DataTable } from "@/components/main/data-table/data-table"
 import { createStudentColumns } from "@/components/main/attendance/student-columns"
 import { useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ interface ClassResponse {
       name: string;
       description?: string;
     };
-    students: Student[];
+    students: DashboardStudent[];
   };
   error?: string;
   timestamp?: string;
@@ -34,10 +34,10 @@ export default function StudentList({params}: {params: Promise<{ classId: string
   );
   
   // Use real data from API or fall back to empty array if loading
-  const students = data?.students || [];
+  const students = data?.data?.students || [];
   // const classDetails = data?.data?.classDetails;
   
-  const handleRowClick = (student: Student) => {
+  const handleRowClick = (student: DashboardStudent) => {
     const studentClassId = encodeURIComponent(student.class.replace(' ', '%20'));
     const studentId = student.id;
     router.push(`/dashboard/attendance/${studentClassId}/${studentId}`);

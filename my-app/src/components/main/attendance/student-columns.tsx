@@ -2,13 +2,13 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Edit, Trash2 } from "lucide-react"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Student } from "@/app/interface/dashboard"
+import { DashboardStudent } from "@/types"
 import { Avatar } from "../data-table/Avatar"
 
 
 
 // Function to create columns with the class ID for routing
-export const createStudentColumns = (classId: string): ColumnDef<Student>[] => {
+export const createStudentColumns = (classId: string): ColumnDef<DashboardStudent>[] => {
   return [
     {
       accessorKey: 'name',

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { TransformedStudent } from '@/app/interface/testapi'; // updated import
+import { TransformedStudent } from '@/types'; // updated import
 import { Avatar } from './data-table/Avatar'; // Ensure this path is correct
 
 const StudentInfoCards = ({ student }: { student: TransformedStudent }) => (

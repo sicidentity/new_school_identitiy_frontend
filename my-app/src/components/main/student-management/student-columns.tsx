@@ -4,7 +4,7 @@ import { ArrowUpDown, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Avatar } from "../data-table/Avatar"
-import { Student } from "@/app/interface/testapi"
+import { Student } from "@/types"
 
 export const createStudentColumns = (): ColumnDef<Student, unknown>[] => {
   return [

@@ -31,6 +31,7 @@ export enum Role {
     resetToken?: string;
     resetTokenExpiry?: Date;
     password: string;
+    avatarUrl?: string;
     createdAt: Date;
     updatedAt: Date;
   } // picture prop

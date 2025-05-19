@@ -2,12 +2,11 @@
 
 import { useState } from 'react'
 import useSWR, { mutate } from 'swr'
-import { StudentForm } from "@/components/main/student-management/student-form"
+import { toast } from 'sonner'
+import { StudentForm, StudentFormValues } from "@/components/main/student-management/student-form"
 import { DataTable } from "@/components/main/data-table/data-table"
 import { createStudentColumns } from "@/components/main/student-management/student-columns"
-import { Student, StudentRequest } from "@/app/interface/testapi"
-import { toast } from "@/components/ui/use-toast"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { Student, StudentRequest } from "@/types"
 import { useRouter } from 'next/navigation'
 
 const { API_URL } = process.env
@@ -38,10 +37,28 @@ export default function StudentsPage() {
 
   const [isCreating, setIsCreating] = useState(false)
 
-  const handleAddStudent = async (formData: StudentRequest) => {
+  const handleAddStudent = async (values: StudentFormValues) => {
     setIsCreating(true)
     try {
       if (!API_URL) throw new Error('API_URL is not defined');
+
+      // Convert form values to StudentRequest format
+      const formData: StudentRequest = {
+        name: values.name,
+        age: values.age,
+        classId: values.classId,
+        parentId: values.parentId,
+        picture: values.picture ? URL.createObjectURL(values.picture) : undefined,
+        studentInfo: {
+          email: values.email,
+          phone: values.phone,
+        },
+        parentInfo: {
+          name: 'Parent', // Default value - in a real app you'd get this from the parent selection
+          email: values.email, // Using the same email for demo
+          phone: values.phone, // Using the same phone for demo
+        },
+      };
 
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -53,27 +70,23 @@ export default function StudentsPage() {
 
       const { data: newStudent } = await response.json()
 
-      mutate<{ success: boolean, data: Student[], count: number }>(
+      mutate(
         API_URL,
-        (currentData: { success: boolean, data: Student[], count: number } | undefined) => ({
-          ...currentData,
-          data: [...(currentData?.data || []), newStudent],
-          count: (currentData?.count || 0) + 1,
-        }),
+        (currentData) => {
+          // Create a safe default if currentData is undefined
+          const safeData = currentData || { success: true, data: [], count: 0 };
+          return {
+            success: safeData.success,
+            data: [...safeData.data, newStudent],
+            count: safeData.count + 1
+          };
+        },
         false
-      )
+      );
 
-      toast({
-        title: 'Success',
-        description: 'Student created successfully',
-        variant: 'default',
-      })
+      toast.success('Student created successfully');
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: err instanceof Error ? err.message : 'Failed to create student',
-        variant: 'destructive',
-      })
+      toast.error(err instanceof Error ? err.message : 'Failed to create student');
     } finally {
       setIsCreating(false)
     }
@@ -85,7 +98,7 @@ export default function StudentsPage() {
 
   if (isLoading || !classesData) return (
     <div className="flex items-center justify-center h-screen">
-      <LoadingSpinner size="lg" />
+      <div>Loading...</div>
     </div>
   )
 

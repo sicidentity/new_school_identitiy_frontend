@@ -7,10 +7,10 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Row, Cell } from '@tanstack/react-table';
 
-import { Student } from '@/app/interface/dashboard'; // Import the Student type
+import { DashboardStudent } from '@/types'; // Import the DashboardStudent type
 
 type StudentRowProps = {
-    row: Row<Student>; // row is a Row of Student type
+    row: Row<DashboardStudent>; // row is a Row of DashboardStudent type
     classId: string;
   };
   
@@ -20,7 +20,7 @@ export function StudentRow({ row, classId }: StudentRowProps) {
 
   return (
     <TableRow data-state={row.getIsSelected() ? "selected" : undefined}>
-      {row.getVisibleCells().map((cell: Cell<Student, unknown>) => {
+      {row.getVisibleCells().map((cell: Cell<DashboardStudent, unknown>) => {
         if (cell.column.id === 'name') {
           return (
             <TableCell key={cell.id}>

@@ -16,8 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Student, Class, Parent } from "@/app/interface/testapi"
-import { toast } from "sonner"
+import Image from 'next/image'
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -35,20 +34,19 @@ const studentSchema = z.object({
     .instanceof(File)
     .optional()
     .refine(file => !file || file.size <= MAX_FILE_SIZE, 'Max image size is 5MB')
-    .refine(file => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), 
-    'Only .jpg, .png, .webp formats are supported'
+    .refine(file => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), 'Only .jpg, .png, .webp formats are supported')
 })
 
 export type StudentFormValues = z.infer<typeof studentSchema>
 
 interface StudentFormProps {
-  onSubmitSuccess: () => void
-  classes: Class[]
-  parents: Parent[]
+  onSubmit: (values: StudentFormValues) => void
+  isSubmitting?: boolean
+  classes: { id: string; name: string }[]
+  parents?: { id: string; name: string }[] 
 }
 
-export function StudentForm({ onSubmitSuccess, classes, parents }: StudentFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function StudentForm({ onSubmit, isSubmitting = false, classes, parents = [] }: StudentFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>("")
 
   const form = useForm<StudentFormValues>({
@@ -64,41 +62,7 @@ export function StudentForm({ onSubmitSuccess, classes, parents }: StudentFormPr
   })
 
   const handleSubmit = async (values: StudentFormValues) => {
-    setIsSubmitting(true)
-    
-    try {
-      const formData = new FormData()
-      formData.append('name', values.name)
-      formData.append('age', values.age.toString())
-      formData.append('classId', values.classId)
-      formData.append('parentId', values.parentId)
-      formData.append('email', values.email)
-      formData.append('phone', values.phone)
-      
-      if (values.picture) {
-        formData.append('picture', values.picture)
-      }
-
-      const response = await fetch('/api/students', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form')
-      }
-
-      const result = await response.json()
-      toast.success('Student created successfully')
-      onSubmitSuccess()
-      form.reset()
-
-    } catch (error) {
-      console.error('Submission error:', error)
-      toast.error('Failed to create student. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
+    onSubmit(values);
   }
 
   // Consistent styling
@@ -137,10 +101,12 @@ export function StudentForm({ onSubmitSuccess, classes, parents }: StudentFormPr
                       <FormLabel>Student Picture</FormLabel>
                       <div className="flex items-center gap-4">
                         {previewUrl && (
-                          <img 
+                          <Image 
                             src={previewUrl}
-                            alt="Preview" 
-                            className="w-20 h-20 rounded-full object-cover border"
+                            alt="Preview"
+                            width={80}
+                            height={80}
+                            className="rounded-full object-cover border"
                           />
                         )}
                         <FormControl>

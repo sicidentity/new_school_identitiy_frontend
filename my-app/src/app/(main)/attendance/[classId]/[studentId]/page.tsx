@@ -1,15 +1,19 @@
 // src/app/dashboard/attendance/[classId]/[studentId]/page.tsx
 
+'use client'
+
 import { DataTable } from '@/components/main/data-table/data-table';
 import { columns } from '@/components/main/attendance/student-attendance-columns';
 import StudentInfoCards from '@/components/main/StudentInfoCards';
-import { Attendance, TransformedStudent } from '@/app/interface/testapi';
+import { Attendance, TransformedStudent } from '@/types';
+import { use } from 'react';
+import useSWR from 'swr';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     classId: string;
     studentId: string;
-  };
+  }>;
 }
 
 // Response type from our Next.js API
@@ -23,17 +27,24 @@ interface StudentDetailsResponse {
   timestamp?: string;
 }
 
-export default async function StudentDetails({ params }: PageProps) {
-  const { studentId } = params;
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-  // Fetch from your own API route (which talks to backend)
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/attendance/student/${studentId}`, {
-    cache: 'no-store',
-  });
+export default function StudentDetails({ params }: PageProps) {
+  const { studentId } = use(params);
+  const { data: json, error, isLoading } = useSWR<StudentDetailsResponse>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/attendance/student/${studentId}`,
+    fetcher
+  );
 
-  const json: StudentDetailsResponse = await res.json();
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="text-center">Loading student data...</div>
+      </div>
+    );
+  }
 
-  if (!json.success || !json.data) {
+  if (error || !json?.success || !json?.data) {
     return (
       <div className="container mx-auto py-10">
         <div className="text-red-500 text-center">Failed to load student data.</div>

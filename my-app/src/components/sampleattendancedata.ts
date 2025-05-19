@@ -1,5 +1,5 @@
 // src/app/dashboard/attendance/[classId]/[studentId]/data.ts
-import { AttendanceRecord } from '@/app/interface/dashboard';
+import { AttendanceRecord } from '@/types';
 
 const sampleAttendanceData: AttendanceRecord[] = [
   {

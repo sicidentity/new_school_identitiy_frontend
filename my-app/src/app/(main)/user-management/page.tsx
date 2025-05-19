@@ -1,11 +1,9 @@
 'use client'
 
-import { User } from '@/app/interface/dashboard'
-import { createUserColumns } from '@/components/main/user-management/user-columns'
 import { DataTable } from "@/components/main/data-table/data-table"
+import { createUserColumns } from '@/components/main/user-management/user-columns'
 import useSWR from 'swr'
-import { UsersResponse } from '@/app/interface/testapi'
-
+import { User, UsersResponse } from '@/types'
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 

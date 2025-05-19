@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FiTrash2 } from "react-icons/fi";
 import { Button } from '@/components/ui/button';
-import { User } from "@/app/interface/dashboard";
+import { User, Role } from "@/app/interface/testapi";
 import { ColumnDef } from "@tanstack/react-table";
 import { BsPencil } from "react-icons/bs";
 
@@ -46,15 +46,13 @@ export const createUserColumns = (): ColumnDef<User>[] => {
       accessorKey: 'role',
       header: 'Role',
       cell: ({ row }) => {
-        const role = row.original.role
+        const role = row.original.role || Role.SECURITY
         
         return (
           <div className="flex items-center">
             <span className={`
               px-2 py-1 rounded-full text-xs
-              ${role === 'Admin' ? 'bg-blue-100 text-blue-800' :
-                role === 'Teacher' ? 'bg-green-100 text-green-800' :
-                'bg-gray-100 text-gray-800'}
+              ${role === Role.ADMIN ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}
             `}>
               {role}
             </span>

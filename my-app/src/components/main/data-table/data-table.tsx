@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/table'
 import { DataTableHeader } from './data-table-header'
 import { DataTablePagination } from './data-table-pagination'
-import { DataTableProps } from '@/app/interface/dashboard'
+import { DataTableProps } from '@/types'
 
 interface DataTableCustomProps<TData, TValue> extends DataTableProps<TData, TValue> {
   showFilters?: boolean

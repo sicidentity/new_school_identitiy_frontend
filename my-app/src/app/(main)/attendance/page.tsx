@@ -1,6 +1,6 @@
 'use client'
 
-import { ClassesResponse } from '@/app/interface/testapi';
+import { ClassesResponse } from '@/types';
 import Link from 'next/link'
 import useSWR from 'swr';
 
@@ -11,7 +11,7 @@ export default function ClassList() {
   const { data, error, isLoading } = useSWR<ClassesResponse>('/api/attendance/classes', fetcher);
   
   // Safer extraction of classes data
-  const classes = data || [];
+  const classes = data?.data || [];
   
   if (error) return <div>Error loading classes</div>;
   if (isLoading) return <div>Loading...</div>;
