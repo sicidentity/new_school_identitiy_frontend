@@ -1,27 +1,41 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { SidebarProvider, useSidebarToggle } from '@/hooks/useSidebarToggle';
+import { GetLoggedInUser } from '@/lib/actions/user.actions';
 
 const PanelLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { isOpen } = useSidebarToggle();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const loggedUser = async (): Promise<void> => {
+      const getUser = await GetLoggedInUser();
+
+      if (!getUser) {
+        console.error('failed to fetch user');
+        return;
+      }
+
+      setUser(getUser as User);
+    };
+
+    loggedUser();
+  }, []);
 
   return (
     <div className="flex flex-row w-[100vw] min-h-screen">
-      <Sidebar />
+      {user && <Sidebar name={user.name} email={user.email} />}
       <div className="flex flex-col flex-grow">
-        <Navbar />
         <main
           className={cn(
-            "flex-grow transition-all ease-in-out duration-300 bg-zinc-50 dark:bg-zinc-900 min-h-[calc(100vh-3rem)]",
+            "flex-grow transition-all ease-in-out duration-300 bg-[#f1f3f4] min-h-[calc(100vh-3rem)] overflow-x-hidden",
             isOpen ? "ml-48" : "ml-0"
           )}
         >
-          <div className="p-4 h-full">
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>

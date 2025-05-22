@@ -28,3 +28,17 @@ export const CreateUserSchema = () => z.object({
   password: z.string().min(8),
   role: z.string().min(3),
 })
+
+export const CreateStudentSchema = () => z.object({
+  name: z.string().min(3),
+  class: z.string().email(),
+  age: z.string().min(8),
+  parent: z.string().min(3),
+})
+
+export const CreateParentSchema = () => z.object({
+  name: z.string().min(3),
+  class: z.string().email(),
+  age: z.string().min(8),
+  parent: z.string().min(3),
+})

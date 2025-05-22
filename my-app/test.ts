@@ -1,39 +1,15 @@
-'use client';
+model Attendance {
+  id           String    @id @default(uuid())
+  studentId    Int       @map("student_id") // Changed to Int to match Student.id
+  classId      String    @map("class_id")
+  checkInTime  DateTime  @map("check_in_time")
+  checkOutTime DateTime? @map("check_out_time")
+  year         Int
+  day          Int
+  student      Student   @relation(fields: [studentId], references: [id])
+  class        Class     @relation(fields: [classId], references: [id])
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
-import { cn } from '@/lib/utils';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
-import { SidebarProvider, useSidebarToggle } from '@/hooks/useSidebarToggle';
-
-const PanelLayoutContent = ({ children }: { children: React.ReactNode }) => {
-  const { isOpen } = useSidebarToggle();
-
-  return (
-    <div className="flex flex-row w-[100vw] min-h-screen">
-      <Sidebar />
-      <div className="flex flex-col flex-grow">
-        <Navbar />
-        <main
-          className={cn(
-            "flex-grow transition-all ease-in-out duration-300 bg-zinc-50 dark:bg-zinc-900 min-h-[calc(100vh-3rem)]",
-            isOpen ? "ml-48" : "ml-0"
-          )}
-        >
-          <div className="p-4 h-full">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-};
-
-const PanelLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <SidebarProvider initialState={false}>
-      <PanelLayoutContent>{children}</PanelLayoutContent>
-    </SidebarProvider>
-  );
-};
-
-export default PanelLayout;
+  @@map("attendances")
+}

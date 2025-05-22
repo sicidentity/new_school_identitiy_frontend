@@ -338,3 +338,42 @@ export const DeleteUser = async (userId: string): Promise<{ message: string }> =
     throw error;
   }
 };
+
+export const GetAllUsers = async (): Promise<UserResponse[]> => {
+  try {
+    if (!API_URL) {
+      console.error("API URL is not configured");
+      throw new Error("API URL is not configured");
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token');
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/auth`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token.value}`,
+        "Content-Type": "application/json",
+      },
+      cache: 'no-store'
+    });
+
+    const responseClone = response.clone();
+
+    if (!response.ok) {
+      const errorData = await responseClone.json();
+      console.error('Error in get all users response', errorData);
+      throw new Error(errorData.message || "Failed to fetch users");
+    }
+
+    const data: UserResponse[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Get all users error:", error);
+    throw error;
+  }
+};

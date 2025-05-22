@@ -1,85 +1,106 @@
 'use client';
 
-// import { GetLoggedInUser } from '@/lib/actions/user.actions';
-// import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSidebarToggle } from '@/hooks/useSidebarToggle';
 import { FiSettings } from "react-icons/fi";
-import { FaTachometerAlt } from "react-icons/fa";
-import { MdManageAccounts } from "react-icons/md";
-import { FaUserGraduate } from "react-icons/fa";
-import { IoCalendarOutline } from "react-icons/io5";
-import { HiOutlineDocumentReport } from "react-icons/hi";
+import { RxDashboard } from "react-icons/rx";
+import { IoPersonOutline } from "react-icons/io5";
+import { FaPeopleLine } from "react-icons/fa6";
+import { MdOutlineFactCheck } from "react-icons/md";
+import { MdShowChart } from "react-icons/md";
 import Image from 'next/image';
-import Link from 'next/link'; 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-const Sidebar = () => {
-  // const [user, setUser] = useState(null);
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [loading, setLoading] = useState(false);
+const Sidebar = ({ name, email }: SidebarProps): JSX.Element => {
   const { isOpen } = useSidebarToggle();
+  const pathname = usePathname();
+  const [activeLink, setActiveLink] = useState<string>('');
 
-  // useEffect(() => {
-  //   const checkLoggedInStatus = async () => {
-  //     try {
-  //       const loggedInUser = await GetLoggedInUser();
-  //       setUser(loggedInUser);
-  //       setIsLoggedIn(!!loggedInUser);
+  useEffect(() => {
+    setActiveLink(pathname);
+  }, [pathname]);
 
-  //       if (loggedInUser) {
-          
-  //       }
-  //     } catch (error) {
-  //       console.error('Error checking login status:', error);
-  //     }
-  //   };
+  const handleLinkClick = (path: string): void => {
+    setActiveLink(path);
+  };
 
-  //   checkLoggedInStatus();
-  // }, []);
+  const navItems: NavItem[] = [
+    { path: '/', label: 'Dashboard', icon: <RxDashboard size={20} /> },
+    { path: '/user_management', label: 'User Management', icon: <IoPersonOutline size={20} /> },
+    { path: '/student_management', label: 'Student Management', icon: <FaPeopleLine size={20} /> },
+    { path: '/attendance', label: 'Attendance', icon: <MdOutlineFactCheck size={20} /> },
+    { path: '/report', label: 'Report', icon: <MdShowChart size={20} /> },
+  ];
 
   return (
     <div 
-      className={`fixed top-0 left-0 h-screen bg-gray-200 dark:bg-gray-800 text-black dark:text-white flex flex-col border-r-2 border-gray-400 transition-all duration-300 ${
+      className={`fixed top-0 left-0 h-screen bg-[#fff] text-black flex flex-col border-none transition-all duration-300 ${
         isOpen ? 'w-[17rem]' : 'w-[4rem]'
       }`}
     >
       <div className="w-full p-4 flex flex-col">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/images/Logo.svg" alt="Logo" className="mt-4" width={70} height={70} />
-          <span>MyApp</span>
+          {isOpen && <span className="text-[#258094] font-bold text-[26px]">MyApp</span>}
         </Link>
         
-        <div className="flex flex-col gap-2">
-          <Link href="/dashboard" className="flex flex-row items-center gap-2 p-2 hover:bg-gray-300 rounded-md">
-            <FaTachometerAlt size={20} />
-            <span>Dashboard</span>
-          </Link>
-          <Link href="/user_management" className="flex flex-row items-center gap-2 p-2 hover:bg-gray-300 rounded-md">
-            <MdManageAccounts size={20} />
-            <span>User Management</span>
-          </Link>
-          <Link href="/student_management" className="flex flex-row items-center gap-2 p-2 hover:bg-gray-300 rounded-md">
-            <FaUserGraduate size={20} />
-            <span>Student Management</span>
-          </Link>
-          <Link href="/attendance" className="flex items-center flex-row gap-2 p-2 hover:bg-gray-300 rounded-md">
-            <IoCalendarOutline size={20} />
-            <span>Attendance</span>
-          </Link>
-          <Link href="/report" className="flex items-center flex-row gap-2 p-2 hover:bg-gray-300 rounded-md">
-            <HiOutlineDocumentReport size={20} />
-            <span>Report</span>
-          </Link>
+        <div className="flex flex-col gap-2 mt-8">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              className={`flex items-center gap-2 p-2 rounded-md transition-colors font-semibold ${
+                activeLink === item.path
+                  ? 'bg-[#268094] text-[#fff]'
+                  : 'hover:bg-gray-300'
+              }`}
+              onClick={() => handleLinkClick(item.path)}
+            >
+              <span className={`${activeLink === item.path ? 'text-white' : ''}`}>
+                {item.icon}
+              </span>
+              {isOpen && <span>{item.label}</span>}
+            </Link>
+          ))}
         </div>
       </div>
       
-      <div className="mt-auto border-t-2 border-gray-400 w-full p-4">
+      <div className="mt-auto w-full p-4 flex flex-col">
         <div className="text-sm opacity-75">
-          <Link href="/Settings" className="flex items-center flex-row gap-2 p-2 hover:bg-gray-300 rounded-md">
-            <FiSettings size={20} />
-            <span>Settings</span>
+          <Link
+            href="/settings"
+            className={`flex items-center gap-2 p-2 rounded-md transition-colors font-semibold ${
+              activeLink === '/settings'
+                ? 'bg-[#268094] text-[#fff]'
+                : 'hover:bg-gray-300'
+            }`}
+            onClick={() => handleLinkClick('/settings')}
+          >
+            <span className={`${activeLink === '/settings' ? 'text-white' : ''}`}>
+              <FiSettings size={20} />
+            </span>
+            {isOpen && <span>Settings</span>}
           </Link>
         </div>
-        {/* <div className="font-medium truncate">{user?.name}</div> */}
+        
+          <div className="font-medium mt-2">
+            {isOpen ? (
+              <div className="flex flex-row items-center gap-2 mt-2">
+                <div className="w-8 h-8 rounded-full bg-[#268094] text-white flex items-center justify-center">
+                  {name && name.charAt(0)}
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-sm font-medium">{name}</h2>
+                  <p className="text-xs text-gray-600">{email}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-[#268094] text-white flex items-center justify-center">
+                {name && name.charAt(0)}
+              </div>
+            )}
+          </div>
       </div>
     </div>
   );
