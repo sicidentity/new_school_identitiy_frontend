@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react'
 import {
   Table,
@@ -58,7 +60,7 @@ const StudentReportTable = ({ attendance }) => {
             <TableCell className="px-2">{renderCellContent(attend.checkInTime)}</TableCell>
             <TableCell className="px-2">{renderCellContent(attend.checkOutTime)}</TableCell>
             <TableCell className="px-2">
-              Absent
+              {renderCellContent(attend.status)}
             </TableCell>
           </TableRow>
         ))}

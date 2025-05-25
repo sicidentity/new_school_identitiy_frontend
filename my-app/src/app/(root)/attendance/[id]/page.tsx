@@ -1,4 +1,5 @@
-// ClassAttendancePage.tsx
+'use client'
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -13,7 +14,7 @@ interface RouteParams {
 
 const ClassAttendancePage = () => {
   const params = useParams<RouteParams>();
-  const classId = params.classId;
+  const classId = params.id;
   const { isOpen, toggleSidebar } = useSidebarToggle();
   const [classData, setClassData] = useState<Class | null>(null);
   const [isLoading, setIsLoading] = useState(true);

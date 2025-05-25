@@ -174,6 +174,7 @@ declare type ClassWiseAttendance = {
   attended: number;
   missed: number;
   attendancePercentage: number;
+  attendanceRecords: AttendanceRecord[];
 };
 
 declare type LateVsOnTimeAttendance = {
@@ -198,6 +199,7 @@ declare interface AttendanceRecord {
   classId: string;
   checkInTime: string | null;
   checkOutTime: string | null;
+  date: string;
 }
 
 declare interface ClassWiseAttendanceResponse {
@@ -226,4 +228,38 @@ declare interface UserTableProps {
 
 declare interface AttendanceTableProps {
   students: Student[];
+}
+
+interface ClassItem {
+  id: string;
+  name: string;
+}
+
+interface AttendanceRecord {
+  id: string;
+  studentId: string;
+  studentName?: string;
+  checkInTime: string;
+  checkOutTime?: string;
+}
+
+interface ChartDataItem {
+  period: string;
+  attendance: number;
+  date: string;
+}
+
+interface StudentStatistics {
+  studentId: number;
+  totalAttendance: number;
+  absences: number;
+  attendancePercentage: number;
+}
+
+interface AttendanceTableProps {
+  students: Array<{
+    id: number;
+    name: string;
+    // Add other student properties as needed
+  }>;
 }

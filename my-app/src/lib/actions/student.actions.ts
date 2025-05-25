@@ -37,7 +37,7 @@ export const getStudentById = async (id: number): Promise<Student> => {
       throw new Error("API URL is not configured");
     }
 
-    const response = await fetch(`${API_URL}/student/${id}`, {
+    const response = await fetch(`${API_URL}/students/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

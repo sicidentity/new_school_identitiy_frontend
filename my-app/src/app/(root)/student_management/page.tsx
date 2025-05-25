@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";

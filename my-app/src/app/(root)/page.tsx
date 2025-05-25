@@ -12,33 +12,17 @@ import { TbUsers } from "react-icons/tb";
 import { BiSolidSchool } from "react-icons/bi";
 import { FaCalendarAlt } from "react-icons/fa";
 import AttendanceGraph from '@/components/AttendanceGraph';
-
-interface User {
-  id: string;
-  name: string;
-  email?: string;
-  [key: string]: any;
-}
-
-interface Student {
-  id: string;
-  name: string;
-  class?: string;
-  checkIn?: string;
-  checkOut?: string;
-  description?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: any;
-}
+import { getClasses } from '@/lib/actions/class.actions';
+import { getClassStatistics } from '@/lib/actions/attendance.actions';
 
 export default function Home() {
   const { isOpen, toggleSidebar } = useSidebarToggle();
   const [user, setUser] = useState<User | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<Student[]>([]);
+  const [totalAttendanceToday, setTotalAttendanceToday] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -56,19 +40,20 @@ export default function Home() {
     fetchUser();
   }, []);
 
-  // Fetch students data
   useEffect(() => {
     const fetchStudents = async () => {
       setLoading(true);
       try {
         const studentsData = await GetStudents();
-        if (studentsData) {
+        const classesData = await getClasses();
+        if (studentsData && classesData) {
           setStudents(studentsData);
+          setClasses(classesData);
         } else {
-          console.error('Failed to fetch students');
+          console.error('Failed to fetch students and classes data');
         }
       } catch (error) {
-        console.error('Error fetching students:', error);
+        console.error('Error fetching students and classes:', error);
       } finally {
         setLoading(false);
       }
@@ -76,6 +61,45 @@ export default function Home() {
 
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    const fetchDailyAttendance = async () => {
+      if (classes.length === 0) return;
+
+      let totalAttendanceToday = 0;
+      const classAttendanceData = [];
+
+      for (const classItem of classes) {
+        try {
+          const classStats = await getClassStatistics(classItem.id);
+
+          const attendanceRate = classStats.attendanceRate || 0;
+          const presentStudents = Math.round((attendanceRate / 100) * classStats.totalStudents);
+          
+          classAttendanceData.push({
+            className: classItem.name,
+            attendanceRate: attendanceRate,
+            presentStudents: presentStudents,
+            totalStudents: classStats.totalStudents
+          });
+
+          totalAttendanceToday += presentStudents;
+        } catch (classError) {
+          console.warn(`Failed to get stats for class ${classItem.id}:`, classError);
+          classAttendanceData.push({
+            className: classItem.name,
+            attendanceRate: 0,
+            presentStudents: 0,
+            totalStudents: 0
+          });
+        }
+      }
+
+      setTotalAttendanceToday(totalAttendanceToday);
+    };
+
+    fetchDailyAttendance();
+  }, [classes]); // Added classes as dependency
 
   return (
     <div className="w-full flex flex-col h-screen py-[2rem] pl-[6rem] pr-[2rem] bg-[#f1f3f4]">
@@ -104,12 +128,12 @@ export default function Home() {
         />
         <DashboardCard 
           title="Total Classes" 
-          value="0" 
+          value={classes.length.toString()} 
           icon={<BiSolidSchool className="h-5 w-5" />} 
         />
         <DashboardCard 
           title="Attendance Today" 
-          value="0" 
+          value={totalAttendanceToday.toString()} 
           icon={<FaCalendarAlt className="h-5 w-5" />} 
         />
       </div>
@@ -120,7 +144,7 @@ export default function Home() {
       </div>
       
       <h3 className="font-bold text-xl text-[#000] mb-[1rem]">Student Attendance</h3>
-      <div className="flex-1 overflow-hidden">
+      {/* <div className="flex-1 overflow-hidden">
         <ScrollArea className="w-full h-[300px]">
           {loading ? (
             <div className="flex justify-center items-center h-32">
@@ -130,7 +154,7 @@ export default function Home() {
             <StudentTable students={students} />
           )}
         </ScrollArea>
-      </div>
+      </div> */}
     </div>
   );
 }

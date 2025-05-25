@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
 import { useSidebarToggle } from '@/hooks/useSidebarToggle';
@@ -6,13 +9,16 @@ import { getStudentById } from '@/lib/actions/student.actions';
 import StudentReportTable from '@/components/StudentReportTable';
 
 const StudentAttendancePage = () => {
+  const params = useParams();
+  const studentId = params.studentId;
   const { isOpen, toggleSidebar } = useSidebarToggle();
   const [student, setStudent] = useState<Student | null>(null);
 
   useEffect(() => {
     const fetchStudent = async (): Promise<void> => {
       try {
-        const getStudent = await getStudentById();
+        const getStudent = await getStudentById(studentId);
+        console.log('getStudent', getStudent);
         
         if (!getStudent) {
           console.error('Failed to fetch student by id');
@@ -26,7 +32,7 @@ const StudentAttendancePage = () => {
     };
     
     fetchStudent();
-  }, []);
+  }, [studentId]);
 
   return (
     <div  className="w-full flex flex-col h-screen py-[2rem] pl-[6rem] pr-[2rem] bg-[#f1f3f4]">
@@ -46,19 +52,19 @@ const StudentAttendancePage = () => {
           <Link href="/create_user" className="text-[#fff] rounded bg-[#268094] p-2">Create New User</Link>
         </div>
       </div>
-      <div className="w-full p-4 bg-[#fff] flex flex-row">
-        <div>
+      <div className="w-full px-4 py-1 flex flex-row justify-between mb-4 bg-gray-600">
+        <div className="bg-[#fff] justify-center w-[24.5%] items-center flex">
           {student?.name}
         </div>
-        <div className='flex flex-col'>
+        <div className='bg-[#fff] justify-center w-[24.5%] items-center flex flex-col'>
           <h2>Student ID</h2>
           <p>{student?.id}</p>
         </div>
-        <div className='flex flex-col'>
-          <h2>Admission Date</h2>
-          <p>{student?.id}</p>
+        <div className='bg-[#fff] justify-center w-[24.5%] items-center flex flex-col'>
+          <h2>Student Qrcode</h2>
+          <p>{student?.qrCodes[0].id}</p>
         </div>
-        <div className='flex flex-col'>
+        <div className='bg-[#fff] justify-center w-[24.5%] items-center flex flex-col'>
           <h2>Class</h2>
           <p>{student?.class.name}</p>
         </div>

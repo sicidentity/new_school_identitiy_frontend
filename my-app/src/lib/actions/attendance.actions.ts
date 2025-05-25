@@ -177,20 +177,43 @@ export const getClassStatistics = async (
       throw new Error("API URL is not configured");
     }
 
+    //console.log(`Fetching statistics for class: ${classId} from ${API_URL}`);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const response = await fetch(`${API_URL}/attendance/class/${classId}/statistics`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      cache: 'no-store'
+      cache: 'no-store',
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch class statistics: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`HTTP Error ${response.status}:`, errorText);
+      throw new Error(`Failed to fetch class statistics: ${response.status} - ${errorText}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    //console.log(`Successfully fetched statistics for class ${classId}:`, data);
+    return data;
+
   } catch (error) {
+    if (error.name === 'AbortError') {
+      console.error(`Request timeout for class ${classId}`);
+      throw new Error(`Request timeout for class ${classId}`);
+    }
+    
+    if (error.code === 'ECONNRESET' || error.code === 'ENOTFOUND') {
+      console.error(`Network error for class ${classId}:`, error.message);
+      throw new Error(`Network connection failed for class ${classId}. Please check if the backend server is running.`);
+    }
+    
     console.error(`Error fetching statistics for class ${classId}:`, error);
     throw error;
   }
@@ -254,7 +277,7 @@ export const getAverageAttendancePercentage = async (
 };
 
 export const getMonthlyAttendanceReport = async (
-  studentId: number,
+  classId: string,
   month: number,
   year: number
 ): Promise<MonthlyReport> => {
@@ -264,13 +287,16 @@ export const getMonthlyAttendanceReport = async (
       throw new Error("API URL is not configured");
     }
 
-    const response = await fetch(`${API_URL}/attendance/student/${studentId}/monthly-report/${year}/${month}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: 'no-store'
-    });
+    const response = await fetch(
+      `${API_URL}/attendance/class/${classId}/monthly-report/${year}/${month}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: 'no-store'
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to fetch monthly report: ${response.status}`);
@@ -278,10 +304,11 @@ export const getMonthlyAttendanceReport = async (
 
     return await response.json();
   } catch (error) {
-    console.error(`Error fetching monthly report for student ${studentId}:`, error);
+    console.error(`Error fetching monthly report for class ${classId}:`, error);
     throw error;
   }
 };
+
 
 export const getAttendanceTrend = async (
   studentId: number,
@@ -380,7 +407,7 @@ export const getLateVsOnTimeAttendance = async (
 };
 
 export const getWeeklyAttendanceReport = async (
-  studentId: number,
+  classId: string,
   startDate: Date,
   endDate: Date
 ): Promise<WeeklyReport> => {
@@ -394,7 +421,7 @@ export const getWeeklyAttendanceReport = async (
     const endDateParam = endDate.toISOString().split('T')[0];
 
     const response = await fetch(
-      `${API_URL}/attendance/student/${studentId}/weekly-report?startDate=${startDateParam}&endDate=${endDateParam}`, 
+      `${API_URL}/attendance/class/${classId}/weekly-report?startDate=${startDateParam}&endDate=${endDateParam}`, 
       {
         method: "GET",
         headers: {
@@ -410,10 +437,11 @@ export const getWeeklyAttendanceReport = async (
 
     return await response.json();
   } catch (error) {
-    console.error(`Error fetching weekly report for student ${studentId}:`, error);
+    console.error(`Error fetching weekly report for class ${classId}:`, error);
     throw error;
   }
 };
+
 
 export const deleteCheckIn = async (
   attendanceId: string
