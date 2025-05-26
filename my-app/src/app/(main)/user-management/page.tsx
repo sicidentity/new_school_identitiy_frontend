@@ -9,7 +9,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function UserManagementPage() {
   // Fetch users from the API
-  const { data, error, isLoading } = useSWR<UsersResponse>('/api/users', fetcher);
+  const { data, error, isLoading } = useSWR<UsersResponse>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`, fetcher);
   
   // Use the data from the API or fall back to an empty array
   const users = data?.data || [];

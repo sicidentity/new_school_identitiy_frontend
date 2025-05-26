@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FiTrash2 } from "react-icons/fi";
 import { Button } from '@/components/ui/button';
-import { User, Role } from "@/app/interface/testapi";
+import { User, Role } from "../../../app/interface/testapi";
 import { ColumnDef } from "@tanstack/react-table";
 import { BsPencil } from "react-icons/bs";
 

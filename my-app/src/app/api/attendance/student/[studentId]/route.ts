@@ -1,97 +1,92 @@
-import { Attendance } from '@/types';
 import { NextResponse } from 'next/server';
+import { Attendance } from '@/types';
 
-// Mock data for development
-const mockStudent = {
-  id: '12345',
-  name: 'John Doe',
-  regNumber: 'STU2023001',
-  picture: 'https://randomuser.me/api/portraits/men/1.jpg',
-  class: { name: 'Mathematics' }
-};
+export async function GET(req: Request, { params }: { params: { studentId: string } }) {
+  const { studentId } = params;
 
-const mockAttendance: Attendance[] = [
-  {
-    id: 'att1',
-    studentId: 12345,
-    classId: 'c1',
-    checkInTime: new Date(new Date().setHours(7, 45)).toISOString(),
-  },
-  {
-    id: 'att2',
-    studentId: 12345,
-    classId: 'c1',
-    checkInTime: new Date(new Date().setHours(7, 50)).toISOString(),
-  },
-  {
-    id: 'att3',
-    studentId: 12345,
-    classId: 'c1',
-    checkInTime: new Date(new Date().setHours(8, 15)).toISOString(),
-  },
-  {
-    id: 'att4',
-    studentId: 12345,
-    classId: 'c1',
-    checkInTime: new Date(new Date().setHours(7, 40)).toISOString(),
-  },
-  {
-    id: 'att5',
-    studentId: 12345,
-    classId: 'c1',
-    checkInTime: new Date(new Date().setHours(9, 10)).toISOString(),
-  },
-];
-
-export async function GET(req: Request, { params }: { params: Promise<{ studentId: string }> }) {
-  const { studentId } = await params;
 
   try {
-    // Check if we're in development mode
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Using mock data for student attendance');
-      
-      // Transform the student into TransformedStudent shape
-      const transformedStudent = {
-        id: mockStudent.id,
-        name: mockStudent.name,
-        regNumber: mockStudent.regNumber || 'N/A',
-        attendance: mockAttendance.length,
-        absences: 0,
-        late: mockAttendance.filter((a) => {
-          if (!a.checkInTime) return false;
-          // Type assertion to tell TypeScript that checkInTime is not null
-          const checkInTime = a.checkInTime as string | Date;
-          const checkIn = new Date(checkInTime).getHours();
-          return checkIn > 8; // late if after 8AM
-        }).length,
-        avatar: mockStudent.picture || '',
-        class: mockStudent.class.name
-      };
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          student: transformedStudent,
-          attendance: mockAttendance
-        },
-        timestamp: new Date().toISOString()
-      });
+    if (!process.env.BACKEND_API_URL) {
+      throw new Error('Missing BACKEND_API_URL environment variable');
     }
     
-    // If not in development, fetch from your backend
-    const backendRes = await fetch(`${process.env.BACKEND_BASE_URL}/students/${studentId}`);
-    const backendJson = await backendRes.json();
-
-    if (!backendRes.ok || !backendJson.success) {
-      return NextResponse.json(
-        { success: false, error: backendJson.error || 'Failed to fetch student' },
-        { status: backendRes.status }
-      );
+    const backendUrl = `${process.env.BACKEND_API_URL}/students/${studentId}`;
+    console.log('Fetching student from for the student detail:', backendUrl);
+    
+    const backendRes = await fetch(backendUrl, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store'
+    });
+    
+    if (!backendRes.ok) {
+      console.error('Backend response not OK:', backendRes.status, backendRes.statusText);
+      const errorText = await backendRes.text();
+      console.error('Error response body:', errorText);
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        return NextResponse.json(
+          { 
+            success: false,
+            error: errorData.message || `Failed to fetch student with ID: ${studentId}`,
+            status: backendRes.status 
+          },
+          { status: backendRes.status }
+        );
+      } catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
+        return NextResponse.json(
+          { 
+            success: false,
+            error: `Failed to fetch student: ${backendRes.statusText}`,
+            status: backendRes.status 
+          },
+          { status: backendRes.status }
+        );
+      }
     }
-
-    const student = backendJson.data.student;
-    const attendance = backendJson.data.attendance;
+    
+    const student = await backendRes.json();
+    console.log('Student data from backend:', student);
+    
+    // The backend API returns the student object directly, not wrapped in a data.student property
+    // We need to fetch the attendance data separately
+    
+    // Fetch attendance records for this student
+    const attendanceUrl = `${process.env.BACKEND_API_URL}/attendance/student/${studentId}`;
+    console.log('Fetching attendance from:', attendanceUrl);
+    
+    // Default to empty array for attendance
+    let attendance = [];
+    
+    try {
+      const attendanceRes = await fetch(attendanceUrl, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-store'
+      });
+      
+      if (!attendanceRes.ok) {
+        console.log(`Attendance endpoint returned ${attendanceRes.status}. Using empty attendance data.`);
+      } else {
+        // Endpoint succeeded
+        const attendanceData = await attendanceRes.json();
+        attendance = attendanceData.data || [];
+        console.log('Attendance data retrieved successfully');
+      }
+      
+      // Log whether the attendance array is empty
+      if (attendance.length === 0) {
+        console.log('Attendance array is empty');
+      } else {
+        console.log(`Found ${attendance.length} attendance records for student ${studentId}`);
+      }
+    } catch (e) {
+      console.error('Error fetching attendance data:', e);
+      console.log('Using empty attendance array due to error');
+    }
 
     // Transform the student into TransformedStudent shape
     const transformedStudent = {
@@ -108,7 +103,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ studentI
         return checkIn > 8; // late if after 8AM, adjust as needed
       }).length,
       avatar: student.picture || '',
-      class: student.class.name
+      class: student.class?.name || 'Unknown Class'
     };
 
     return NextResponse.json({
@@ -122,38 +117,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ studentI
   } catch (err) {
     console.error('Error fetching student data:', err);
     
-    // In development, return mock data even on error
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Returning mock data after error');
-      
-      // Transform the student into TransformedStudent shape
-      const transformedStudent = {
-        id: mockStudent.id,
-        name: mockStudent.name,
-        regNumber: mockStudent.regNumber || 'N/A',
-        attendance: mockAttendance.length,
-        absences: 0,
-        late: mockAttendance.filter((a) => {
-          if (!a.checkInTime) return false;
-          // Type assertion to tell TypeScript that checkInTime is not null
-          const checkInTime = a.checkInTime as string | Date;
-          const checkIn = new Date(checkInTime).getHours();
-          return checkIn > 8; // late if after 8AM
-        }).length,
-        avatar: mockStudent.picture || '',
-        class: mockStudent.class.name
-      };
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          student: transformedStudent,
-          attendance: mockAttendance
-        },
-        timestamp: new Date().toISOString()
-      });
-    }
-    
-    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 });
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Internal server error',
+        details: err instanceof Error ? err.message : 'Unknown error'
+      }, 
+      { status: 500 }
+    );
   }
 }

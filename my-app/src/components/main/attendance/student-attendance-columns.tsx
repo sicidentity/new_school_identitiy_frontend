@@ -22,13 +22,14 @@ export const columns = [
       header: 'Status',
       cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
         const status = row.getValue('status')
+        const statusLower = status?.toLowerCase() || ''
         const colorClass = {
           present: 'text-green-600',
           absent: 'text-red-600',
           late: 'text-yellow-600'
-        }[status.toLowerCase()]
+        }[statusLower] || 'text-gray-600'
         
-        return <div className={`font-semibold ${colorClass}`}>{status}</div>
+        return <div className={`font-semibold ${colorClass}`}>{status || 'Unknown'}</div>
       }
     },
     {

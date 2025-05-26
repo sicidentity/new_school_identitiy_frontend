@@ -29,7 +29,7 @@ export default function StudentList({params}: {params: Promise<{ classId: string
   
   // Fetch data using SWR
   const { data, error, isLoading } = useSWR<ClassResponse>(
-    `/api/attendance/class/${classId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/attendance/class/${classId}`,
     fetcher
   );
   
@@ -40,7 +40,7 @@ export default function StudentList({params}: {params: Promise<{ classId: string
   const handleRowClick = (student: DashboardStudent) => {
     const studentClassId = encodeURIComponent(student.class.replace(' ', '%20'));
     const studentId = student.id;
-    router.push(`/dashboard/attendance/${studentClassId}/${studentId}`);
+    router.push(`/attendance/${studentClassId}/${studentId}`);
   };
   
   // Create columns with the class ID for proper routing

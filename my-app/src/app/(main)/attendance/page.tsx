@@ -3,18 +3,60 @@
 import { ClassesResponse } from '@/types';
 import Link from 'next/link'
 import useSWR from 'swr';
+import { useEffect } from 'react';
 
-
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const error = new Error('An error occurred while fetching the data.');
+    // @ts-expect-error - Adding custom info property to Error object for debugging
+    error.info = await res.json().catch(() => ({}));
+    // @ts-expect-error - Adding custom status property to Error object for debugging
+    error.status = res.status;
+    throw error;
+  }
+  return res.json();
+};
 
 export default function ClassList() {
-  const { data, error, isLoading } = useSWR<ClassesResponse>('/api/attendance/classes', fetcher);
+  console.log('Environment check:', {
+    NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    all_env: Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_'))
+  });
+   
+
+  const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/attendance/classes`;
+  
+  console.log('Fetching from URL:', apiUrl); // Add this line
+  
+  const { data, error, isLoading } = useSWR<ClassesResponse>(
+    apiUrl, 
+    fetcher
+  );
+  
+  // Log errors for debugging
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching classes:', error);
+      console.error('Error details:', error.info);
+      console.error('Status code:', error.status);
+    }
+  }, [error]);
   
   // Safer extraction of classes data
   const classes = data?.data || [];
   
-  if (error) return <div>Error loading classes</div>;
-  if (isLoading) return <div>Loading...</div>;
+  if (error) return (
+    <div className="p-4 text-red-600">
+      <h2 className="text-xl font-bold mb-2">Error loading classes</h2>
+      <p>Status: {error.status || 'Unknown'}</p>
+      <p>Message: {error.info?.error || 'Unknown error occurred'}</p>
+      <p>Please check the console for more details.</p>
+    </div>
+  );
+  
+  if (isLoading) return <div className="p-4">Loading classes...</div>;
 
   return (
     <div className="bg-white min-h-screen p-5">

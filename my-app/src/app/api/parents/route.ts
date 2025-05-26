@@ -1,24 +1,35 @@
-// app/api/attendance/classes/route.ts
+// app/api/parents/route.ts
 import { NextResponse } from 'next/server';
+import { Parent, ApiResponse } from '@/types/models';
 
-export async function GET() {
+// Define our own API response type
+type ParentsApiResponse = ApiResponse<Parent[]>;
+
+export async function GET(request: Request): Promise<NextResponse<ParentsApiResponse>> {
   try {
     if (!process.env.BACKEND_API_URL) {
       throw new Error('Missing BACKEND_API_URL environment variable');
     }
     
-    const backendUrl = `${process.env.BACKEND_API_URL}/classes`;
+    console.log('Fetching parents data from backend API');
     
-    console.log('Fetching classes from:', backendUrl);
+    // Check if we're looking for a specific parent by ID
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const backendUrl = id 
+      ? `${process.env.BACKEND_API_URL}/parents/${id}`
+      : `${process.env.BACKEND_API_URL}/parents`;
+    
+    console.log('Fetching parents from:', backendUrl);
     
     const response = await fetch(backendUrl, {
       headers: {
         'Content-Type': 'application/json'
       },
       // Disable Next.js cache to ensure fresh data
-      cache: 'no-store'
+      // cache: 'no-store'
     });
-
+    
     if (!response.ok) {
       console.error('Backend response not OK:', response.status, response.statusText);
       const errorText = await response.text();
@@ -29,7 +40,8 @@ export async function GET() {
         return NextResponse.json(
           { 
             success: false,
-            error: errorData.message || 'Failed to fetch classes',
+            error: errorData.message || 'Failed to fetch parents',
+            timestamp: new Date().toISOString(),
             status: response.status 
           },
           { status: response.status }
@@ -38,27 +50,28 @@ export async function GET() {
         return NextResponse.json(
           { 
             success: false,
-            error: `Failed to fetch classes: ${response.statusText}`,
+            error: `Failed to fetch parents: ${response.statusText}`,
+            timestamp: new Date().toISOString(),
             status: response.status 
           },
           { status: response.status }
         );
       }
     }
-
-    const classes = await response.json();
-    console.log('Successfully fetched classes:', classes);
+    
+    const data = await response.json();
+    console.log('Successfully fetched parents:', data);
     
     return NextResponse.json({
       success: true,
-      data: classes,
+      data: data.parents || data.data || data, // Handle different response formats
       timestamp: new Date().toISOString()
     });
-
+    
   } catch (error) {
     console.error('Error in API route:', error);
     
-    // Log the error but don't return mock data anymore
+    // Log the error but don't return mock data
     console.log('Error occurred, returning error response');
     
     return NextResponse.json(
@@ -66,7 +79,7 @@ export async function GET() {
         success: false,
         error: 'Internal server error',
         details: error instanceof Error ? error.message : 'Unknown error',
-        // stack: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined
+        timestamp: new Date().toISOString()
       },
       { status: 500 }
     );

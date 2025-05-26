@@ -33,7 +33,7 @@ export const createStudentColumns = (classId: string): ColumnDef<DashboardStuden
               size="md" 
             />
             <Link 
-              href={`/dashboard/attendance/${classId}/${student.id}`}
+              href={`/attendance/${classId}/${student.id}`}
               className="font-medium hover:underline"
             >
               {student.name}

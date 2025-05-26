@@ -5,13 +5,13 @@ import { StatsTabs } from '@/components/main/dashboard/statistic-tabs';
 import { AttendanceChart } from '@/components/main/dashboard/attendance-graph';
 import { DataTable } from '@/components/main/data-table/data-table';
 import { createAttendanceColumns } from '@/components/main/dashboard/attendance-columns';
-import { DashboardData } from '@/app/interface/testapi';
+import { DashboardData } from '../../interface/testapi';
 
 // SWR Fetcher function
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function DashboardPage() {
-  const { data, error } = useSWR<DashboardData>('/api/dashboard', fetcher, {
+  const { data, error } = useSWR<DashboardData>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/dashboard`, fetcher, {
     revalidateOnFocus: false,
     refreshInterval: 30000, // Auto-refresh every 30s
   });

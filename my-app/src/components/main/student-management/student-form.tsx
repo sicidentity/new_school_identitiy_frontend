@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from 'next/image'
+import { Parent } from '@/types/models'
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -29,7 +30,9 @@ const studentSchema = z.object({
   classId: z.string().min(1, "Class selection is required"),
   parentId: z.string().min(1, "Parent selection is required"),
   email: z.string().email("Invalid email"),
+  parentEmail: z.string().email("Invalid email"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  parentPhone: z.string().min(10, "Phone number must be at least 10 digits"),
   picture: z
     .instanceof(File)
     .optional()
@@ -43,7 +46,7 @@ interface StudentFormProps {
   onSubmit: (values: StudentFormValues) => void
   isSubmitting?: boolean
   classes: { id: string; name: string }[]
-  parents?: { id: string; name: string }[] 
+  parents?: Parent[] 
 }
 
 export function StudentForm({ onSubmit, isSubmitting = false, classes, parents = [] }: StudentFormProps) {
@@ -66,11 +69,29 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
   }
 
   // Consistent styling
-  const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300"
-  const selectTriggerClassName = `${inputClassName} !bg-white !text-gray-900`
+  const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full"
+  const selectTriggerClassName = `${inputClassName} !bg-white !text-gray-900 !w-full`
+
+  // Add custom styles to fix dropdown width issues
+  const formStyles = {
+    '.select-container': {
+      width: '100%',
+    },
+    '.select-container [data-slot="select-trigger"]': {
+      width: '100% !important',
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
+      <style jsx global>{`
+        .select-container {
+          width: 100%;
+        }
+        .select-container [data-slot="select-trigger"] {
+          width: 100% !important;
+        }
+      `}</style>
       <div className="!p-8 rounded-lg shadow-md">
         <div className="flex justify-between items-center !mb-6">
           <h2 className="text-lg font-medium">Add New Student</h2>
@@ -117,14 +138,15 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                               className={inputClassName}
                               onChange={(e) => {
                                 const file = e.target.files?.[0]
-                                field.onChange(file)
                                 if (file) {
+                                  field.onChange(file)
                                   const reader = new FileReader()
                                   reader.onload = () => {
                                     setPreviewUrl(reader.result as string)
                                   }
                                   reader.readAsDataURL(file)
                                 } else {
+                                  field.onChange(undefined)
                                   setPreviewUrl("")
                                 }
                               }}
@@ -184,12 +206,13 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                   control={form.control}
                   name="classId"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="!w-full">
                       <FormLabel>Class</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        value={field.value}
-                      >
+                      <div className="form-select-wrapper">
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value}
+                        >
                         <FormControl>
                           <SelectTrigger className={selectTriggerClassName}>
                             <SelectValue placeholder="Select a class" />
@@ -203,6 +226,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                           ))}
                         </SelectContent>
                       </Select>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -215,10 +239,11 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Parent</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        value={field.value}
-                      >
+                      <div className="form-select-wrapper">
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value}
+                        >
                         <FormControl>
                           <SelectTrigger className={selectTriggerClassName}>
                             <SelectValue placeholder="Select a parent" />
@@ -232,10 +257,50 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                           ))}
                         </SelectContent>
                       </Select>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/* Parent Phone Number Field */}
+                <FormField
+                  control={form.control}
+                  name="parentPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parent Phone Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={inputClassName}
+                          placeholder="+1234567890"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Parent Email Field */}
+                <FormField
+                  control={form.control}
+                  name="parentEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parent Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={inputClassName}
+                          placeholder="john@example.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
 
                 {/* Email Field */}
                 <FormField

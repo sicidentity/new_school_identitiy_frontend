@@ -25,7 +25,7 @@ export function StudentRow({ row, classId }: StudentRowProps) {
           return (
             <TableCell key={cell.id}>
               <Link 
-                href={`/dashboard/attendance/${classId}/${student.id}`} 
+                href={`/attendance/${classId}/${student.id}`} 
                 className="font-medium hover:underline"
               >
                 {row.getValue('name')}

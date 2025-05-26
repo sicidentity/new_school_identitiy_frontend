@@ -27,13 +27,25 @@ export default function StudentsPage() {
     success: boolean, 
     data: Student[], 
     count: number 
-  }>(API_URL, fetcher)
+  }>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/students`, fetcher)
 
   // Classes data
-  const { data: classesData, error: classError } = useSWR<{ id: string, name: string }[]>(
-    '/api/classes', // update this to your real endpoint
+  const { data: classesResponse, error: classError } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/attendance/classes`,
     fetcher
   )
+  
+  // Parents data from the dedicated parents API endpoint
+  const { data: parentsResponse, error: parentsError } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/parents`,
+    fetcher
+  )
+  
+  // Extract classes from the response and ensure it's an array
+  const classesData = classesResponse?.data || []
+  
+  // Extract parents from the response and ensure it's an array
+  const parentsData = parentsResponse?.data || []
 
   const [isCreating, setIsCreating] = useState(false)
 
@@ -71,7 +83,7 @@ export default function StudentsPage() {
       const { data: newStudent } = await response.json()
 
       mutate(
-        API_URL,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/students`,
         (currentData) => {
           // Create a safe default if currentData is undefined
           const safeData = currentData || { success: true, data: [], count: 0 };
@@ -96,13 +108,13 @@ export default function StudentsPage() {
     router.push(`attendance/${student.classId}/${student.id}`)
   }
 
-  if (isLoading || !classesData) return (
+  if (isLoading || !classesData || !parentsData) return (
     <div className="flex items-center justify-center h-screen">
       <div>Loading...</div>
     </div>
   )
 
-  if (error || classError) return (
+  if (error || classError || parentsError) return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-red-500 text-center">
         <p>Failed to load data</p>
@@ -117,6 +129,7 @@ export default function StudentsPage() {
         onSubmit={handleAddStudent} 
         isSubmitting={isCreating}
         classes={classesData} // Pass fetched classes
+        parents={parentsData} // Pass fetched parents
       />
 
       <DataTable

@@ -22,6 +22,7 @@ model User {
   role      Role?
   email     String   @unique
   name          String
+  picture      String?
   resetToken      String?
   resetTokenExpiry DateTime? 
   password  String
@@ -35,6 +36,11 @@ model Student {
   id           Int             @id // Changed to Int for 7-digit numeric ID
   name         String
   age          Int
+  phone        String
+  email        String
+  regNumber    String
+  admissionDate DateTime
+  address      String
   classId      String          @map("class_id")
   parentId     String          @map("parent_id")
   picture      String?        

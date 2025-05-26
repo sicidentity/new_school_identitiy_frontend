@@ -9,68 +9,6 @@ const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME
 const B2_BUCKET_ID = process.env.B2_BUCKET_ID
 const B2_ENDPOINT = `https://s3.${process.env.B2_REGION}.backblazeb2.com`
 const BACKEND_API_URL = process.env.BACKEND_API_URL
-const API_TOKEN = process.env.API_TOKEN
-
-// Mock data for development
-const mockStudents = [
-  {
-    id: 1001,
-    name: "John Doe",
-    age: 15,
-    classId: "c1",
-    parentId: "p1",
-    email: "john@example.com",
-    phone: "1234567890",
-    picture: "https://randomuser.me/api/portraits/men/1.jpg",
-    class: { name: "Mathematics" }
-  },
-  {
-    id: 1002,
-    name: "Jane Smith",
-    age: 16,
-    classId: "c1",
-    parentId: "p2",
-    email: "jane@example.com",
-    phone: "0987654321",
-    picture: "https://randomuser.me/api/portraits/women/1.jpg",
-    class: { name: "Mathematics" }
-  },
-  {
-    id: 1003,
-    name: "Michael Johnson",
-    age: 15,
-    classId: "c2",
-    parentId: "p3",
-    email: "michael@example.com",
-    phone: "5556667777",
-    picture: "https://randomuser.me/api/portraits/men/2.jpg",
-    class: { name: "Science" }
-  },
-  {
-    id: 1004,
-    name: "Emily Williams",
-    age: 16,
-    classId: "c2",
-    parentId: "p4",
-    email: "emily@example.com",
-    phone: "1112223333",
-    picture: "https://randomuser.me/api/portraits/women/2.jpg",
-    class: { name: "Science" }
-  },
-  {
-    id: 1005,
-    name: "Robert Brown",
-    age: 15,
-    classId: "c3",
-    parentId: "p5",
-    email: "robert@example.com",
-    phone: "4445556666",
-    picture: "https://randomuser.me/api/portraits/men/3.jpg",
-    class: { name: "History" }
-  }
-];
-
-export const dynamic = 'force-dynamic'
 
 // Helper function to upload files to Backblaze B2
 async function uploadToBackblaze(file: File) {
@@ -133,55 +71,29 @@ async function deleteFromBackblaze(fileId: string) {
 
 export async function GET(request: Request) {
   try {
-    // In development mode, return mock data
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Using mock data for students');
-      
-      const { searchParams } = new URL(request.url);
-      const id = searchParams.get('id');
-      
-      if (id) {
-        // Return a specific student
-        const student = mockStudents.find(s => s.id.toString() === id);
-        
-        if (!student) {
-          return NextResponse.json(
-            { success: false, error: 'Student not found' },
-            { status: 404 }
-          );
-        }
-        
-        return NextResponse.json({
-          success: true,
-          data: student,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      // Return all students
-      return NextResponse.json({
-        success: true,
-        data: mockStudents,
-        timestamp: new Date().toISOString()
-      });
+    if (!process.env.BACKEND_API_URL) {
+      throw new Error('Missing BACKEND_API_URL environment variable');
     }
     
-    // If not in development, use the real API
+    console.log('Fetching students data from backend API')
+    
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     const backendUrl = id 
-      ? `${BACKEND_API_URL}/students/${id}`
-      : `${BACKEND_API_URL}/students`
+      ? `${process.env.BACKEND_API_URL}/students/${id}`
+      : `${process.env.BACKEND_API_URL}/students`
+
+    console.log('Fetching from URL:', backendUrl)
 
     const response = await fetch(backendUrl, {
       headers: {
-        'Authorization': `Bearer ${API_TOKEN}`,
         'Content-Type': 'application/json'
       }
     })
 
     if (!response.ok) {
       const errorData = await response.json()
+      console.error('Failed to fetch students:', errorData)
       return NextResponse.json(
         { success: false, error: errorData.message || 'Failed to fetch students' },
         { status: response.status }
@@ -197,39 +109,6 @@ export async function GET(request: Request) {
 
   } catch (error) {
     console.error('Fetch students error:', error)
-    
-    // If in development, return mock data even on error
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Returning mock data after error');
-      
-      const { searchParams } = new URL(request.url);
-      const id = searchParams.get('id');
-      
-      if (id) {
-        // Return a specific student
-        const student = mockStudents.find(s => s.id.toString() === id);
-        
-        if (!student) {
-          return NextResponse.json(
-            { success: false, error: 'Student not found' },
-            { status: 404 }
-          );
-        }
-        
-        return NextResponse.json({
-          success: true,
-          data: student,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      // Return all students
-      return NextResponse.json({
-        success: true,
-        data: mockStudents,
-        timestamp: new Date().toISOString()
-      });
-    }
     
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
@@ -261,12 +140,17 @@ export async function POST(request: Request) {
       b2FileId: pictureData?.fileId || null
     }
 
+    if (!process.env.BACKEND_API_URL) {
+      throw new Error('Missing BACKEND_API_URL environment variable');
+    }
+    
+    console.log('Sending student data to:', `${process.env.BACKEND_API_URL}/students`);
+    
     // Send to main backend
-    const backendResponse = await fetch(`${BACKEND_API_URL}/students`, {
+    const backendResponse = await fetch(`${process.env.BACKEND_API_URL}/students`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(studentData)
     })
@@ -320,7 +204,6 @@ export async function PUT(request: Request) {
     // Get existing student data
     const existingStudent = await fetch(`${BACKEND_API_URL}/students/${id}`, {
       headers: {
-        'Authorization': `Bearer ${API_TOKEN}`,
         'Content-Type': 'application/json'
       }
     }).then(res => res.json())
@@ -351,8 +234,7 @@ export async function PUT(request: Request) {
     const backendResponse = await fetch(`${BACKEND_API_URL}/students/${id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(updateData)
     })
@@ -405,7 +287,6 @@ export async function DELETE(request: Request) {
     // Get student data to find B2 file ID
     const student = await fetch(`${BACKEND_API_URL}/students/${id}`, {
       headers: {
-        'Authorization': `Bearer ${API_TOKEN}`,
         'Content-Type': 'application/json'
       }
     }).then(res => res.json())
@@ -419,7 +300,6 @@ export async function DELETE(request: Request) {
     const backendResponse = await fetch(`${BACKEND_API_URL}/students/${id}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${API_TOKEN}`,
         'Content-Type': 'application/json'
       }
     })

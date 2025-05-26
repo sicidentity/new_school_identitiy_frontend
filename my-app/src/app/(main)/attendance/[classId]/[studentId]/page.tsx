@@ -1,4 +1,4 @@
-// src/app/dashboard/attendance/[classId]/[studentId]/page.tsx
+// src/app/(main)/attendance/[classId]/[studentId]/page.tsx
 
 'use client'
 

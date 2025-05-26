@@ -25,7 +25,7 @@ export const createStudentColumns = (): ColumnDef<Student, unknown>[] => {
           <div className="flex items-center gap-3">
             <Avatar src={student.picture} name={student.name} size="md" />
             <Link
-              href={`/dashboard/attendance/${student.classId}/${student.id}`}
+              href={`/attendance/${student.classId}/${student.id}`}
               className="font-medium hover:underline"
             >
               {student.name}
