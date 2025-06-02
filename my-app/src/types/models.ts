@@ -24,11 +24,16 @@ export interface Student {
   id: number; // 7-digit numeric ID
   name: string;
   age: number;
-  email?: string;
-  phoneNumber?: string;
+  phone: string;
+  email: string;
+  regNumber: string;
+  admissionDate: Date;
+  address: string;
   classId: string;
   parentId: string;
   picture?: string;
+  b2FileId?: string;
+  b2FileName?: string;
   class: Class;
   parent: Parent;
   qrCodes: QRCode[];
@@ -37,6 +42,7 @@ export interface Student {
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 export interface Class {
   id: string;

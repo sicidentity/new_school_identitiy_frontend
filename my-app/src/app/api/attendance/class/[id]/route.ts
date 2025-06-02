@@ -1,6 +1,6 @@
 // app/api/attendance/class/[classId]/route.ts
 import { NextResponse } from 'next/server';
-import { Class, Student, Attendance, ClassApiResponse, TransformedStudent } from '@/types'; // Adjust the import path as necessary
+import { ClassApiResponse } from '@/types'; // Adjust the import path as necessary
 
 export async function GET(
   request: Request,

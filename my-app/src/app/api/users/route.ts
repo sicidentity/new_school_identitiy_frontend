@@ -11,6 +11,15 @@ interface FrontendUser {
   avatarUrl: string;
 }
 
+// Define interface for backend user data to avoid using 'any'
+interface BackendUser {
+  id?: string | number;
+  name?: string;
+  email?: string;
+  role?: Role;
+  // Add other potential fields that might come from backend
+}
+
 // Define our own API response type using the FrontendUser
 interface FrontendUserApiResponse {
   success: boolean;
@@ -58,7 +67,7 @@ export async function GET(): Promise<NextResponse<FrontendUserApiResponse>> {
     // Handle different possible response formats
     if (Array.isArray(backendData)) {
       // If the response is already an array of users
-      users = backendData.map((user: any) => ({
+      users = backendData.map((user: BackendUser) => ({
         id: user.id?.toString() || Math.random().toString(36).substr(2, 9),
         name: user.name || 'Unknown User',
         email: user.email || 'no-email@example.com',
@@ -67,7 +76,7 @@ export async function GET(): Promise<NextResponse<FrontendUserApiResponse>> {
       }));
     } else if (backendData.data && Array.isArray(backendData.data)) {
       // If the response has a data property containing the array
-      users = backendData.data.map((user: any) => ({
+      users = backendData.data.map((user: BackendUser) => ({
         id: user.id?.toString() || Math.random().toString(36).substr(2, 9),
         name: user.name || 'Unknown User',
         email: user.email || 'no-email@example.com',
@@ -76,7 +85,7 @@ export async function GET(): Promise<NextResponse<FrontendUserApiResponse>> {
       }));
     } else if (backendData.users && Array.isArray(backendData.users)) {
       // If the response has a users property containing the array
-      users = backendData.users.map((user: any) => ({
+      users = backendData.users.map((user: BackendUser) => ({
         id: user.id?.toString() || Math.random().toString(36).substr(2, 9),
         name: user.name || 'Unknown User',
         email: user.email || 'no-email@example.com',

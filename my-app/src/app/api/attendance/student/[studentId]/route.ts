@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { Attendance } from '@/types';
 
-export async function GET(req: Request, { params }: { params: { studentId: string } }) {
-  const { studentId } = params;
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ studentId: string }> }
+) {
+  const { studentId } = await params;
 
 
   try {

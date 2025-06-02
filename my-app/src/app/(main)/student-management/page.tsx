@@ -52,51 +52,14 @@ export default function StudentsPage() {
   const handleAddStudent = async (values: StudentFormValues) => {
     setIsCreating(true)
     try {
-      if (!API_URL) throw new Error('API_URL is not defined');
-
-      // Convert form values to StudentRequest format
-      const formData: StudentRequest = {
-        name: values.name,
-        age: values.age,
-        classId: values.classId,
-        parentId: values.parentId,
-        picture: values.picture ? URL.createObjectURL(values.picture) : undefined,
-        studentInfo: {
-          email: values.email,
-          phone: values.phone,
-        },
-        parentInfo: {
-          name: 'Parent', // Default value - in a real app you'd get this from the parent selection
-          email: values.email, // Using the same email for demo
-          phone: values.phone, // Using the same phone for demo
-        },
-      };
-
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) throw new Error('Failed to create student')
-
-      const { data: newStudent } = await response.json()
-
-      mutate(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/students`,
-        (currentData) => {
-          // Create a safe default if currentData is undefined
-          const safeData = currentData || { success: true, data: [], count: 0 };
-          return {
-            success: safeData.success,
-            data: [...safeData.data, newStudent],
-            count: safeData.count + 1
-          };
-        },
-        false
-      );
-
-      toast.success('Student created successfully');
+      // The form submission is now handled directly in the StudentForm component
+      // This function is now only responsible for updating the UI after submission
+      
+      // Refresh the students data to include the newly added student
+      await mutate(`${process.env.NEXT_PUBLIC_BASE_URL}/api/students`)
+      
+      // Show success message
+      toast.success('Student created successfully')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to create student');
     } finally {

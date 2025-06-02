@@ -30,9 +30,11 @@ const studentSchema = z.object({
   classId: z.string().min(1, "Class selection is required"),
   parentId: z.string().min(1, "Parent selection is required"),
   email: z.string().email("Invalid email"),
-  parentEmail: z.string().email("Invalid email"),
+  // parentEmail: z.string().email("Invalid email"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  parentPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  // parentPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  address: z.string().optional(),
+  admissionDate: z.string().optional(),
   picture: z
     .instanceof(File)
     .optional()
@@ -61,26 +63,65 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       parentId: '',
       email: '',
       phone: '',
+      address: '',
+      admissionDate: '',
     },
   })
 
   const handleSubmit = async (values: StudentFormValues) => {
-    onSubmit(values);
+    try {
+      // Create FormData object
+      const formData = new FormData();
+      
+      // Add all form fields to FormData
+      formData.append('name', values.name);
+      formData.append('age', values.age.toString());
+      formData.append('classId', values.classId);
+      formData.append('parentId', values.parentId);
+      formData.append('email', values.email);
+      formData.append('phone', values.phone);
+      
+      // Add optional fields if they exist
+      if (values.address) {
+        formData.append('address', values.address);
+      }
+      
+      if (values.admissionDate) {
+        formData.append('admissionDate', values.admissionDate);
+      }
+      
+      // Add picture if it exists
+      if (values.picture) {
+        formData.append('picture', values.picture);
+      }
+      
+      // Submit the form data directly to the API endpoint
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit student data');
+      }
+      
+      const result = await response.json();
+      
+      // Call the original onSubmit with the result
+      onSubmit(values);
+      
+      return result;
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      throw error;
+    }
   }
 
   // Consistent styling
   const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full"
   const selectTriggerClassName = `${inputClassName} !bg-white !text-gray-900 !w-full`
 
-  // Add custom styles to fix dropdown width issues
-  const formStyles = {
-    '.select-container': {
-      width: '100%',
-    },
-    '.select-container [data-slot="select-trigger"]': {
-      width: '100% !important',
-    }
-  };
+  // Custom styles are applied via className props directly
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -96,10 +137,10 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
         <div className="flex justify-between items-center !mb-6">
           <h2 className="text-lg font-medium">Add New Student</h2>
           <Button
-            type="submit"
-            form="student-form"
+            type="button"
             className="!bg-teal-600 hover:!bg-teal-700 !rounded-md !py-2 !px-4 !text-white"
             disabled={isSubmitting}
+            onClick={form.handleSubmit(handleSubmit)}
           >
             {isSubmitting ? "Adding..." : "Add Student"}
           </Button>
@@ -107,9 +148,8 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
         <Separator className="!w-[80%] !my-4" />
         <div className="!mt-6">
           <Form {...form}>
-            <form
+            <div
               id="student-form"
-              onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -180,6 +220,46 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                     </FormItem>
                   )}
                 />
+
+                {/* Address Field */}
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={inputClassName}
+                          placeholder="123 Main St"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Admission Date Field */}
+                <FormField
+                  control={form.control}
+                  name="admissionDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Admission Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          className={inputClassName}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+
 
                 {/* Age Field */}
                 <FormField
@@ -264,7 +344,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                 />
 
                 {/* Parent Phone Number Field */}
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="parentPhone"
                   render={({ field }) => (
@@ -280,10 +360,10 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 {/* Parent Email Field */}
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="parentEmail"
                   render={({ field }) => (
@@ -299,7 +379,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
 
                 {/* Email Field */}
@@ -340,7 +420,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                   )}
                 />
               </div>
-            </form>
+            </div>
           </Form>
         </div>
       </div>
