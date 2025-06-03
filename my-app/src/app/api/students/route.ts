@@ -264,7 +264,7 @@ export async function POST(request: Request) {
           .join('') + Math.floor(1000 + Math.random() * 9000).toString(),
       admissionDate: new Date(formData.get('admissionDate') as string),
       address: formData.get('address') as string,
-      picture: pictureData?.url || null,
+      picture: pictureData?.url,
       b2FileId: pictureData?.fileId || null,
       b2FileName: pictureData?.fileName || null,
     }
@@ -297,8 +297,8 @@ export async function POST(request: Request) {
       try {
         const errorData = await backendResponse.json();
         errorMessage = errorData.message || errorMessage;
-      } catch (parseError) {
-        // If response is not valid JSON, use text content or status text
+      } catch (textError) {
+        console.error('Failed to parse JSON error response:', textError);
         try {
           errorMessage = await backendResponse.text() || backendResponse.statusText;
         } catch (textError) {
