@@ -8,102 +8,9 @@ const B2_APPLICATION_KEY = process.env.B2_APPLICATION_KEY
 const B2_BUCKET_ID = process.env.B2_BUCKET_ID
 const BACKEND_API_URL = process.env.BACKEND_API_URL
 
-// Cache variables for auth token and upload URL
-let cachedAccountAuthToken: string | null = null
-let cachedUploadUrl: string | null = null
-let cachedUploadAuthToken: string | null = null
-let accountTokenFetchTime = 0
-let uploadTokenFetchTime = 0
-
-const ACCOUNT_TOKEN_EXPIRY_TIME = 23 * 60 * 60 * 1000 // 23 hours in milliseconds
-const UPLOAD_TOKEN_EXPIRY_TIME = 23 * 60 * 60 * 1000 // 23 hours in milliseconds
-
-// Step 1: Get account authorization token
-async function getAccountAuthToken() {
-  const now = Date.now()
-  if (
-    cachedAccountAuthToken &&
-    now - accountTokenFetchTime < ACCOUNT_TOKEN_EXPIRY_TIME
-  ) {
-    return cachedAccountAuthToken
-  }
-
-  // Check if credentials are available
-  if (!B2_ACCOUNT_ID || !B2_APPLICATION_KEY) {
-    throw new Error('Backblaze credentials not configured properly')
-  }
-
-  // Create the authorization string with proper encoding
-  const authString = `${B2_ACCOUNT_ID}:${B2_APPLICATION_KEY}`
-  const base64Auth = Buffer.from(authString).toString('base64')
-
-  try {
-    const response = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${base64Auth}`,
-      },
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Backblaze authorization error:', errorText)
-      throw new Error(`Failed to authorize account with Backblaze: ${errorText}`)
-    }
-
-    const data = await response.json()
-    cachedAccountAuthToken = data.authorizationToken
-    accountTokenFetchTime = now
-
-    return cachedAccountAuthToken
-  } catch (error) {
-    console.error('Backblaze authorization error:', error)
-    throw error
-  }
-}
-
-// Step 2: Get upload URL and token
-async function getUploadUrlAndToken() {
-  const now = Date.now()
-  if (
-    cachedUploadUrl &&
-    cachedUploadAuthToken &&
-    now - uploadTokenFetchTime < UPLOAD_TOKEN_EXPIRY_TIME
-  ) {
-    return { uploadUrl: cachedUploadUrl, authorizationToken: cachedUploadAuthToken }
-  }
-
-  const accountAuthToken = await getAccountAuthToken()
-
-  if (!accountAuthToken) {
-    throw new Error('Failed to get account authorization token')
-  }
-
-  const response = await fetch('https://api.backblazeb2.com/b2api/v2/b2_get_upload_url', {
-    method: 'POST',
-    headers: {
-      Authorization: accountAuthToken,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      bucketId: B2_BUCKET_ID,
-    }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Failed to get upload URL from Backblaze: ${errorText}`)
-  }
-
-  const data = await response.json()
-  cachedUploadUrl = data.uploadUrl
-  cachedUploadAuthToken = data.authorizationToken
-  uploadTokenFetchTime = now
-
-  return { uploadUrl: cachedUploadUrl, authorizationToken: cachedUploadAuthToken }
-}
-
-// Upload file to Backblaze B2
+/**
+ * Uploads a file to Backblaze B2
+ */
 async function uploadToBackblaze(file: File) {
   try {
     // Validate credentials
@@ -116,28 +23,56 @@ async function uploadToBackblaze(file: File) {
       throw new Error('Invalid file: File is empty or null')
     }
 
-    console.log(`Preparing to upload file: ${file.name}, size: ${file.size} bytes, type: ${file.type}`)
+    console.log(`Preparing to upload file: ${file.name}, size: ${file.size} bytes`)
 
-    // Get upload credentials
-    const { uploadUrl, authorizationToken } = await getUploadUrlAndToken()
+    // 1. Authorize account
+    const authString = `${B2_ACCOUNT_ID}:${B2_APPLICATION_KEY}`
+    const base64Auth = Buffer.from(authString).toString('base64')
+    
+    console.log('Authorizing with Backblaze...')
+    const authResponse = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
+      method: 'GET',
+      headers: {
+        Authorization: `Basic ${base64Auth}`,
+      },
+    })
 
-    // Generate unique filename
+    if (!authResponse.ok) {
+      const errorText = await authResponse.text()
+      throw new Error(`Backblaze authorization failed: ${errorText}`)
+    }
+
+    const authData = await authResponse.json()
+    console.log('Authorization successful, API URL:', authData.apiUrl)
+
+    // 2. Get upload URL
+    const uploadUrlResponse = await fetch(`${authData.apiUrl}/b2api/v2/b2_get_upload_url`, {
+      method: 'POST',
+      headers: {
+        Authorization: authData.authorizationToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ bucketId: B2_BUCKET_ID }),
+    })
+
+    if (!uploadUrlResponse.ok) {
+      const errorText = await uploadUrlResponse.text()
+      throw new Error(`Failed to get upload URL: ${errorText}`)
+    }
+
+    const { uploadUrl, authorizationToken } = await uploadUrlResponse.json()
+    console.log('Got upload URL:', uploadUrl)
+
+    // 3. Prepare file for upload
     const fileExt = file.name.split('.').pop() || 'bin'
     const fileName = `${crypto.randomUUID()}.${fileExt}`
-
-    // Calculate SHA1 hash of file content
     const fileBuffer = await file.arrayBuffer()
     const hashSum = crypto.createHash('sha1')
     hashSum.update(new Uint8Array(fileBuffer))
     const sha1Hash = hashSum.digest('hex')
 
-    if (!uploadUrl || !authorizationToken) {
-      throw new Error('Failed to get upload URL or authorization token')
-    }
-
-    console.log(`Uploading to Backblaze B2: ${fileName}`)
-
-    // Upload file
+    // 4. Upload file
+    console.log(`Uploading ${fileName} to Backblaze...`)
     const uploadResponse = await fetch(uploadUrl, {
       method: 'POST',
       headers: {
@@ -152,12 +87,11 @@ async function uploadToBackblaze(file: File) {
 
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text()
-      console.error('Backblaze upload error response:', errorText)
-      throw new Error(`File upload failed: ${errorText}`)
+      throw new Error(`Upload failed: ${errorText}`)
     }
 
     const uploadResult = await uploadResponse.json()
-    console.log('File uploaded successfully:', fileName)
+    console.log('Upload successful:', uploadResult.fileName)
 
     return {
       url: uploadResult.downloadUrl || `https://f002.backblazeb2.com/file/${uploadResult.bucketName}/${uploadResult.fileName}`,
@@ -170,36 +104,52 @@ async function uploadToBackblaze(file: File) {
   }
 }
 
-// Delete file from Backblaze B2
+/**
+ * Deletes a file from Backblaze B2
+ */
 async function deleteFromBackblaze(fileId: string, fileName: string) {
-  if (!B2_ACCOUNT_ID || !B2_APPLICATION_KEY) {
-    throw new Error('Backblaze credentials not configured')
+  try {
+    // 1. Authorize account
+    const authString = `${B2_ACCOUNT_ID}:${B2_APPLICATION_KEY}`
+    const base64Auth = Buffer.from(authString).toString('base64')
+    
+    const authResponse = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
+      method: 'GET',
+      headers: {
+        Authorization: `Basic ${base64Auth}`,
+      },
+    })
+
+    if (!authResponse.ok) {
+      const errorText = await authResponse.text()
+      throw new Error(`Backblaze authorization failed: ${errorText}`)
+    }
+
+    const authData = await authResponse.json()
+
+    // 2. Delete file
+    const deleteResponse = await fetch(`${authData.apiUrl}/b2api/v2/b2_delete_file_version`, {
+      method: 'POST',
+      headers: {
+        Authorization: authData.authorizationToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fileId,
+        fileName,
+      }),
+    })
+
+    if (!deleteResponse.ok) {
+      const errorText = await deleteResponse.text()
+      throw new Error(`File deletion failed: ${errorText}`)
+    }
+
+    return await deleteResponse.json()
+  } catch (error) {
+    console.error('Error in deleteFromBackblaze:', error)
+    throw error
   }
-
-  const accountAuthToken = await getAccountAuthToken()
-
-  if (!accountAuthToken) {
-    throw new Error('Failed to get account authorization token')
-  }
-
-  const response = await fetch('https://api.backblazeb2.com/b2api/v2/b2_delete_file_version', {
-    method: 'POST',
-    headers: {
-      Authorization: accountAuthToken,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      fileId: fileId,
-      fileName: fileName,
-    }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`File deletion failed: ${errorText}`)
-  }
-
-  return await response.json()
 }
 
 export async function GET(request: Request) {
@@ -256,20 +206,45 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const file = formData.get('picture') as File | null
     
-    // Process file upload if present
+    // Validate that picture is provided
+    if (!file || file.size === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Student picture is required' },
+        { status: 400 }
+      )
+    }
+    
+    // Process file upload
     let pictureData = null
-    if (file && file.size > 0) {
-      try {
-        // Check if Backblaze credentials are configured
-        if (!B2_ACCOUNT_ID || !B2_APPLICATION_KEY || !B2_BUCKET_ID) {
-          console.warn('Backblaze credentials not configured, skipping file upload')
-        } else {
-          pictureData = await uploadToBackblaze(file)
-        }
-      } catch (uploadError) {
-        console.error('File upload error:', uploadError)
-        // Continue with student creation even if file upload fails
+    try {
+      // Check if Backblaze credentials are configured
+      if (!B2_ACCOUNT_ID || !B2_APPLICATION_KEY || !B2_BUCKET_ID) {
+        return NextResponse.json(
+          { success: false, error: 'File storage is not properly configured' },
+          { status: 500 }
+        )
       }
+      
+      pictureData = await uploadToBackblaze(file)
+      
+      if (!pictureData || !pictureData.url) {
+        return NextResponse.json(
+          { success: false, error: 'Failed to upload student picture' },
+          { status: 500 }
+        )
+      }
+      
+      console.log('Picture uploaded successfully:', pictureData.url)
+    } catch (uploadError) {
+      console.error('File upload error:', uploadError)
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Failed to upload student picture', 
+          details: uploadError instanceof Error ? uploadError.message : 'Unknown upload error'
+        },
+        { status: 500 }
+      )
     }
 
     // Prepare student data
@@ -316,9 +291,21 @@ export async function POST(request: Request) {
         }
       }
       
-      const errorData = await backendResponse.json()
+      let errorMessage = 'Backend request failed';
+      try {
+        const errorData = await backendResponse.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (parseError) {
+        // If response is not valid JSON, use text content or status text
+        try {
+          errorMessage = await backendResponse.text() || backendResponse.statusText;
+        } catch (textError) {
+          console.error('Failed to parse error response:', textError);
+        }
+      }
+      
       return NextResponse.json(
-        { success: false, error: errorData.message || 'Backend request failed' },
+        { success: false, error: errorMessage },
         { status: backendResponse.status }
       )
     }
@@ -381,10 +368,38 @@ export async function PUT(request: Request) {
     let oldFileName = null
 
     // Handle file upload if new picture provided
-    if (file) {
-      pictureData = await uploadToBackblaze(file)
-      oldFileId = existingStudent.data.b2FileId
-      oldFileName = existingStudent.data.b2FileName
+    if (file && file.size > 0) {
+      try {
+        // Check if Backblaze credentials are configured
+        if (!B2_ACCOUNT_ID || !B2_APPLICATION_KEY || !B2_BUCKET_ID) {
+          return NextResponse.json(
+            { success: false, error: 'File storage is not properly configured' },
+            { status: 500 }
+          )
+        }
+        
+        pictureData = await uploadToBackblaze(file)
+        
+        if (!pictureData || !pictureData.url) {
+          return NextResponse.json(
+            { success: false, error: 'Failed to upload student picture' },
+            { status: 500 }
+          )
+        }
+        
+        oldFileId = existingStudent.data.b2FileId
+        oldFileName = existingStudent.data.b2FileName
+      } catch (uploadError) {
+        console.error('File upload error during update:', uploadError)
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Failed to upload new student picture', 
+            details: uploadError instanceof Error ? uploadError.message : 'Unknown upload error'
+          },
+          { status: 500 }
+        )
+      }
     }
 
     // Prepare update data

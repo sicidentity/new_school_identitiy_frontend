@@ -3,13 +3,13 @@
 import { useState } from 'react'
 import useSWR, { mutate } from 'swr'
 import { toast } from 'sonner'
-import { StudentForm, StudentFormValues } from "@/components/main/student-management/student-form"
+import { StudentForm } from "@/components/main/student-management/student-form"
 import { DataTable } from "@/components/main/data-table/data-table"
 import { createStudentColumns } from "@/components/main/student-management/student-columns"
-import { Student, StudentRequest } from "@/types"
+import { Student } from "@/types"
 import { useRouter } from 'next/navigation'
 
-const { API_URL } = process.env
+
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -49,7 +49,7 @@ export default function StudentsPage() {
 
   const [isCreating, setIsCreating] = useState(false)
 
-  const handleAddStudent = async (values: StudentFormValues) => {
+  const handleAddStudent = async () => {
     setIsCreating(true)
     try {
       // The form submission is now handled directly in the StudentForm component

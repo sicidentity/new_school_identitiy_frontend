@@ -67,7 +67,7 @@ export interface Parent {
 
 export interface Attendance {
   id: string;
-  studentId: number;
+  studentId: string;
   classId: string;
   checkInTime: Date;
   checkOutTime?: Date;
@@ -82,7 +82,7 @@ export interface Attendance {
 export interface QRCode {
   id: string;
   code: string;
-  studentId: number;
+  studentId: string;
   student: Student;
   createdAt: Date;
   updatedAt: Date;
@@ -90,7 +90,7 @@ export interface QRCode {
 
 export interface SMSNotification {
   id: string;
-  studentId: number;
+  studentId: string;
   parentId: string;
   status: string;
   message: string;
