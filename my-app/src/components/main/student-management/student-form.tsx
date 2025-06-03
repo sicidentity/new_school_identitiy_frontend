@@ -109,6 +109,10 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       
       // Call the original onSubmit with the result
       onSubmit(values);
+
+      // Reset the form and clear preview after success
+      form.reset();
+      setPreviewUrl("");
       
       return result;
     } catch (error) {

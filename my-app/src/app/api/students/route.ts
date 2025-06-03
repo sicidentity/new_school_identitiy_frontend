@@ -7,6 +7,7 @@ const B2_ACCOUNT_ID = process.env.B2_ACCOUNT_ID
 const B2_APPLICATION_KEY = process.env.B2_APPLICATION_KEY
 const B2_BUCKET_ID = process.env.B2_BUCKET_ID
 const BACKEND_API_URL = process.env.BACKEND_API_URL
+const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME
 
 /**
  * Uploads a file to Backblaze B2
@@ -94,7 +95,7 @@ async function uploadToBackblaze(file: File) {
     console.log('Upload successful:', uploadResult.fileName)
 
     return {
-      url: uploadResult.downloadUrl || `https://f002.backblazeb2.com/file/${uploadResult.bucketName}/${uploadResult.fileName}`,
+      url: uploadResult.downloadUrl || `https://f003.backblazeb2.com/file/${B2_BUCKET_NAME}/${uploadResult.fileName}`,
       fileId: uploadResult.fileId,
       fileName: uploadResult.fileName,
     }
@@ -226,6 +227,7 @@ export async function POST(request: Request) {
       }
       
       pictureData = await uploadToBackblaze(file)
+      console.log('Picture uploaded successfully:', pictureData)  
       
       if (!pictureData || !pictureData.url) {
         return NextResponse.json(
