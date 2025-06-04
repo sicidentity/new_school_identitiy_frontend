@@ -9,8 +9,6 @@ import { createStudentColumns } from "@/components/main/student-management/stude
 import { Student } from "@/types"
 import { useRouter } from 'next/navigation'
 
-
-
 const fetcher = async (url: string) => {
   const res = await fetch(url)
   if (!res.ok) {
@@ -48,20 +46,23 @@ export default function StudentsPage() {
   const parentsData = parentsResponse?.data || []
 
   const [isCreating, setIsCreating] = useState(false)
+  const [formErrors, setFormErrors] = useState<string | null>(null)  // <-- added to store error messages
 
   const handleAddStudent = async () => {
     setIsCreating(true)
+    setFormErrors(null) // Clear old errors on new submit
+
     try {
-      // The form submission is now handled directly in the StudentForm component
-      // This function is now only responsible for updating the UI after submission
-      
       // Refresh the students data to include the newly added student
       await mutate(`${process.env.NEXT_PUBLIC_BASE_URL}/api/students`)
       
       // Show success message
       toast.success('Student created successfully')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to create student');
+      // Show backend validation error message
+      const message = err instanceof Error ? err.message : 'Failed to create student'
+      setFormErrors(message)
+      toast.error(message)
     } finally {
       setIsCreating(false)
     }
@@ -88,6 +89,14 @@ export default function StudentsPage() {
 
   return (
     <div className="mx-auto py-6 min-h-screen">
+      
+      {/* Display backend validation errors in a red banner */}
+      {formErrors && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <strong>Error:</strong> {formErrors}
+        </div>
+      )}
+
       <StudentForm 
         onSubmit={handleAddStudent} 
         isSubmitting={isCreating}

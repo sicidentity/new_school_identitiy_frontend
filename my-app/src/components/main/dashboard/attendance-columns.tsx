@@ -11,6 +11,7 @@ interface AttendanceRecord {
   avatar?: string
   checkIn: string | null
   checkOut: string | null
+  date?: string | null // Added for date column
 }
 
 export const createAttendanceColumns = (): ColumnDef<AttendanceRecord, unknown>[] => {
@@ -43,6 +44,17 @@ export const createAttendanceColumns = (): ColumnDef<AttendanceRecord, unknown>[
       accessorKey: 'class',
       header: 'Class',
       cell: ({ row }) => <div>{row.original.class}</div>,
+    },
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {row.original.checkIn
+            ? format(new Date(row.original.checkIn), 'MMM dd, yyyy')
+            : '--'}
+        </div>
+      ),
     },
     {
       accessorKey: 'checkIn',

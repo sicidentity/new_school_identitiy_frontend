@@ -9,34 +9,48 @@ const { Title } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
+import { Dispatch, SetStateAction } from 'react';
 interface AttendanceChartProps {
   classAttendance: Record<string, Array<{
     day: string;
     attendance: number;
   }>>;
+  classSelected: string;
+  setClassSelected: Dispatch<SetStateAction<string>>;
+  dates: [dayjs.Dayjs, dayjs.Dayjs];
+  setDates: Dispatch<SetStateAction<[dayjs.Dayjs, dayjs.Dayjs]>>;
 }
 
-export function AttendanceChart({ classAttendance }: AttendanceChartProps) {
-  const [classSelected, setClassSelected] = useState('JSS 3B');
-  const [dates, setDates] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([
-    dayjs().subtract(7, 'day'),
-    dayjs()
-  ]);
+export function AttendanceChart({ classAttendance, classSelected, setClassSelected, dates, setDates }: AttendanceChartProps) {
 
-  // Compute adjusted date range before filtering
+  // Process chart data with proper date formatting and sorting
   const chartData = useMemo(() => {
     const classData = classAttendance[classSelected] || [];
-    const adjustedStart = dates[0].subtract(1, 'day');
-    const adjustedEnd = dates[1].add(1, 'day');
-
-    return classData.filter(item => {
+    
+    // Format and sort the data
+    return classData
+      .map(item => ({
+        ...item,
+        day: dayjs(item.day).format('YYYY-MM-DD') // Ensure consistent date format
+      }))
+      .sort((a, b) => dayjs(a.day).valueOf() - dayjs(b.day).valueOf());
+  }, [classSelected, classAttendance]);
+  
+  // Filter data based on date range
+  const filteredData = useMemo(() => {
+    if (!dates[0] || !dates[1]) return chartData;
+    
+    const startDate = dates[0].startOf('day');
+    const endDate = dates[1].endOf('day');
+    
+    return chartData.filter(item => {
       const itemDate = dayjs(item.day);
-      return itemDate.isAfter(adjustedStart) && itemDate.isBefore(adjustedEnd);
+      return itemDate.isAfter(startDate) && itemDate.isBefore(endDate);
     });
-  }, [classSelected, dates, classAttendance]);
+  }, [chartData, dates]);
 
   const config = {
-    data: chartData,
+    data: filteredData,
     xField: 'day',
     yField: 'attendance',
     height: 300,
@@ -52,11 +66,16 @@ export function AttendanceChart({ classAttendance }: AttendanceChartProps) {
       title: {
         text: 'Day',
       },
+      label: {
+        formatter: (value: string) => dayjs(value).format('MMM D'),
+      },
     },
     yAxis: {
       title: {
         text: 'Students',
       },
+      min: 0,
+      tickCount: 5,
     },
     smooth: true,
     animation: {

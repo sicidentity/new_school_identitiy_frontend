@@ -38,7 +38,7 @@ export default function StudentList({params}: {params: Promise<{ classId: string
   // const classDetails = data?.data?.classDetails;
   
   const handleRowClick = (student: DashboardStudent) => {
-    const studentClassId = encodeURIComponent(student.class.replace(' ', '%20'));
+    const studentClassId = encodeURIComponent(student.class || '');
     const studentId = student.id;
     router.push(`/attendance/${studentClassId}/${studentId}`);
   };
