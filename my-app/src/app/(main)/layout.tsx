@@ -17,6 +17,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             { title: "Student Management", url: "/student-management", iconName: "student" },
             { title: "Attendance", url: "/attendance", iconName: "attendance" },
             { title: "Report", url: "/report", iconName: "report" },
+            { title: "Parents Management", url: "/parent-management", iconName: "parent" }
           ]}
           user={{
             name: "Austin Dev",

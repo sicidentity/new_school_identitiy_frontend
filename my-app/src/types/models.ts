@@ -60,6 +60,8 @@ export interface Parent {
   phone: string;
   email: string;
   students: Student[];
+  picture?: string;
+  address?: string;
   smsNotifications: SMSNotification[];
   createdAt: Date;
   updatedAt: Date;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Line } from '@ant-design/charts';
 import { Select, Typography, DatePicker } from 'antd';
 import dayjs from 'dayjs';

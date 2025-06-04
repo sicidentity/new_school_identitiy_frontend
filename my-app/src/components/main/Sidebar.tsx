@@ -32,12 +32,13 @@ import { MdManageAccounts } from "react-icons/md";
 import { FaUserGraduate } from "react-icons/fa";
 import { IoCalendarOutline } from "react-icons/io5";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { FaUserFriends } from "react-icons/fa";
 import { ComponentType } from "react";
 
 type SidebarItem = {
   title: string;
   url: string;
-  iconName: "dashboard" | "attendance" | "users" | "student" | "report";
+  iconName: "dashboard" | "attendance" | "users" | "student" | "report" | "parent";
 };
 
 type SidebarProps = {
@@ -55,6 +56,7 @@ const iconMap: Record<SidebarItem["iconName"], ComponentType<{ className?: strin
   student: FaUserGraduate, // For "Student Management"
   attendance: IoCalendarOutline,
   report: HiOutlineDocumentReport,
+  parent: FaUserFriends,
 };
 
 export function Sidebar({ items, user }: SidebarProps) {

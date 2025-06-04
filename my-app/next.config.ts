@@ -8,6 +8,17 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "randomuser.me",
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'f003.backblazeb2.com',
+      },
+
     ], // ✅ Allow external images from this domain
   },
   webpack: (config) => {

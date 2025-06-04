@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { Attendance } from '@/types';
 
 export async function GET() {
   try {
@@ -36,14 +37,14 @@ export async function GET() {
     // Compute today's attendance count
     const today = new Date().toISOString().split('T')[0];
     const attendanceToday = allAttendances.filter(
-      (a: any) => a.checkInTime && new Date(a.checkInTime).toISOString().split('T')[0] === today
+      (a: Attendance) => a.checkInTime && new Date(a.checkInTime as string).toISOString().split('T')[0] === today
     ).length;
 
     // Compute class attendance data
     const classAttendance: Record<string, { day: string; attendance: number }[]> = {};
 
     // First, get unique class names
-    const classNames: string[] = [...new Set(allAttendances.map((a: any) => a.class?.name).filter(Boolean) as string[])];
+    const classNames: string[] = [...new Set(allAttendances.map((a: Attendance) => a.class?.name).filter(Boolean) as string[])];
     
     // Initialize class attendance with empty arrays
     classNames.forEach((className) => {
@@ -52,11 +53,11 @@ export async function GET() {
 
     // For each class, count attendances per day
     classNames.forEach((className) => {
-      const classAttendances = allAttendances.filter((a: any) => a.class?.name === className);
+      const classAttendances = allAttendances.filter((a: Attendance) => a.class?.name === className);
       
       // Group by day
       const attendancesByDay: Record<string, number> = {};
-      classAttendances.forEach((att: any)=> {
+      classAttendances.forEach((att: Attendance)=> {
         if (att.checkInTime) {
           const day = new Date(att.checkInTime).toISOString().split('T')[0];
           attendancesByDay[day] = (attendancesByDay[day] || 0) + 1;
@@ -77,11 +78,11 @@ export async function GET() {
       attendanceToday,
       classAttendance,
       recentAttendances: allAttendances
-        .sort((a: any, b: any) => 
-          new Date(b.checkInTime).getTime() - new Date(a.checkInTime).getTime()
+        .sort((a: Attendance, b: Attendance) => 
+          new Date(b.checkInTime as string).getTime() - new Date(a.checkInTime as string).getTime()
         )
         .slice(0, 10)
-        .map((a: any) => ({
+        .map((a: Attendance) => ({
           id: a.id,
           studentId: a.studentId,
           classId: a.classId,
