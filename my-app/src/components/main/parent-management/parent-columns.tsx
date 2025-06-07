@@ -2,7 +2,94 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "../data-table/Avatar";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { ConfirmationModal } from '../../ui/confirmation-modal';
 import { Parent } from "@/types/models";
+
+interface ParentActionsCellProps {
+  parentItem: Parent;
+}
+
+const ParentActionsCell: React.FC<ParentActionsCellProps> = ({ parentItem }) => {
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Parent | null>(null);
+
+  const openModal = (item: Parent) => {
+    setItemToDelete(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setItemToDelete(null);
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!itemToDelete) return;
+
+    try {
+      const response = await fetch(`/api/parents/${itemToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
+        console.error("Failed to delete parent:", errorData.message || 'Unknown error');
+        alert(`Error deleting parent: ${errorData.message || 'Failed to delete'}`);
+        closeModal();
+        return;
+      }
+
+      console.log("Parent deleted successfully:", itemToDelete.id);
+      // alert(`Parent ${itemToDelete.name || 'Item'} deleted successfully!`); // Optional: replace with toast
+      router.refresh();
+      closeModal();
+
+    } catch (error) {
+      console.error("Error during delete operation:", error);
+      alert('An unexpected error occurred while deleting the parent.');
+      closeModal();
+    }
+  };
+
+  return (
+    <>
+      <div className="flex justify-end space-x-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => router.push(`/edit/parent/${parentItem.id}`)}
+        >
+          <Edit className="h-4 w-4" />
+          <span className="sr-only">Edit</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => openModal(parentItem)}
+        >
+          <Trash2 className="h-4 w-4" />
+          <span className="sr-only">Delete</span>
+        </Button>
+      </div>
+      {itemToDelete && (
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onConfirm={handleConfirmDelete}
+          title={`Delete Parent: ${itemToDelete.name}`}
+          message={`Are you sure you want to delete the parent "${itemToDelete.name}"? This action cannot be undone.`}
+          confirmText="Delete"
+          confirmVariant="destructive"
+        />
+      )}
+    </>
+  );
+};
 
 export const createParentColumns = (): ColumnDef<Parent, unknown>[] => [
   {
@@ -42,27 +129,9 @@ export const createParentColumns = (): ColumnDef<Parent, unknown>[] => [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex justify-end space-x-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => console.log("Edit", row.original)}
-        >
-          <Edit className="h-4 w-4" />
-          <span className="sr-only">Edit</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => console.log("Delete", row.original)}
-        >
-          <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Delete</span>
-        </Button>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const parentItem = row.original;
+      return <ParentActionsCell parentItem={parentItem} />;
+    },
   },
 ];

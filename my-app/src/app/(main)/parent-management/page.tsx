@@ -7,6 +7,7 @@ import { ParentForm } from '@/components/main/parent-management/parent-form';
 import { DataTable } from '@/components/main/data-table/data-table';
 import { createParentColumns } from '@/components/main/parent-management/parent-columns';
 import { Parent } from '@/types/models';
+// import { ClassForm } from '@/components/main/class-management/class-form';
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -35,8 +36,14 @@ export default function ParentManagementPage() {
       await mutate(`${process.env.NEXT_PUBLIC_BASE_URL}/api/parents`);
       toast.success('Parent created successfully');
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'message' in err && typeof (err as any).message === 'string') {
-        setFormErrors((err as any).message);
+      if (
+  err &&
+  typeof err === 'object' &&
+  err !== null &&
+  'message' in err &&
+  typeof (err as { message?: unknown }).message === 'string'
+) {
+  setFormErrors((err as { message: string }).message);
       } else {
         setFormErrors('Failed to create parent');
       }
@@ -56,6 +63,7 @@ export default function ParentManagementPage() {
           <strong>Error:</strong> {formErrors}
         </div>
       )}
+      {/* <ClassForm onSubmit={handleAddParent} isSubmitting={isCreating} /> */}
       <ParentForm onSubmit={handleAddParent} isSubmitting={isCreating} />
       <DataTable
         title="Parent List"
