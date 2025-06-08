@@ -5,6 +5,39 @@ export enum Role {
   SECURITY = "SECURITY",
 }
 
+export interface StudentApiResponse {
+  success: boolean;
+  data?: {
+    studentDetails: {
+      id: string;
+      name: string;
+      age: number;
+      classId: string;
+      parentId: string;
+      picture?: string;
+    };
+    class: Class;
+    parent: Parent;
+  };
+  error?: string;
+  timestamp?: string;
+}
+
+export interface ParentApiResponse {
+  success: boolean;
+  data?: {
+    parentDetails: {
+      id: string;
+      name: string;
+      phone: string;
+      email: string;
+    };
+    students: Student[];
+  };
+  error?: string;
+  timestamp?: string;
+}
+
 // From testapi.ts
 export interface StatsTabsProps {
   totalStudents: number;

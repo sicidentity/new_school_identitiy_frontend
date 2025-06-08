@@ -1,9 +1,96 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Edit, Trash2 } from "lucide-react"
 import Link from 'next/link'
-import { Button } from "@/components/ui/button"
-import { DashboardStudent } from "@/types"
-import { Avatar } from "../data-table/Avatar"
+import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
+import { DashboardStudent } from "@/types";
+import { Avatar } from "../data-table/Avatar";
+import { useState } from 'react';
+import { ConfirmationModal } from '../../ui/confirmation-modal';
+
+interface StudentActionsCellProps {
+  student: DashboardStudent;
+}
+
+const StudentActionsCell: React.FC<StudentActionsCellProps> = ({ student }) => {
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<DashboardStudent | null>(null);
+
+  const openModal = (item: DashboardStudent) => {
+    setItemToDelete(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setItemToDelete(null);
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!itemToDelete) return;
+
+    try {
+      const response = await fetch(`/api/students/${itemToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
+        console.error("Failed to delete student:", errorData.message || 'Unknown error');
+        alert(`Error deleting student: ${errorData.message || 'Failed to delete'}`);
+        closeModal();
+        return;
+      }
+
+      console.log("Student deleted successfully:", itemToDelete.id);
+      // alert(`Student ${itemToDelete.name || 'Item'} deleted successfully!`); // Optional: replace with toast
+      router.refresh();
+      closeModal();
+
+    } catch (error) {
+      console.error("Error during delete operation:", error);
+      alert('An unexpected error occurred while deleting the student.');
+      closeModal();
+    }
+  };
+
+  return (
+    <>
+      <div className="flex justify-end space-x-2">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 group hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
+          onClick={() => router.push(`/edit/student/${student.id}`)}
+        >
+          <Edit className="h-4 w-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200" />
+          <span className="sr-only">Edit</span>
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 group hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+          onClick={() => openModal(student)} 
+        >
+          <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform duration-200" />
+          <span className="sr-only">Delete</span>
+        </Button>
+      </div>
+      {itemToDelete && (
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onConfirm={handleConfirmDelete}
+          title={`Delete Student: ${itemToDelete.name}`}
+          message={`Are you sure you want to delete the student "${itemToDelete.name}"? This action cannot be undone.`}
+          confirmText="Delete"
+          confirmVariant="destructive"
+        />
+      )}
+    </>
+  );
+};
 
 
 
@@ -76,29 +163,8 @@ export const createStudentColumns = (classId: string): ColumnDef<DashboardStuden
     {
       id: 'actions',
       cell: ({ row }) => {
-        const student = row.original
-        return (
-          <div className="flex justify-end space-x-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
-              onClick={() => alert(`Edit student: ${student.id}`)}
-            >
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Edit</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
-              onClick={() => alert(`Delete student: ${student.id}`)}
-            >
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Delete</span>
-            </Button>
-          </div>
-        )
+        const student = row.original;
+        return <StudentActionsCell student={student} />;
       },
     },
   ]

@@ -540,3 +540,49 @@ export async function DELETE(request: Request) {
     )
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const { id, data } = await request.json()
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Student ID is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!BACKEND_API_URL) {
+      throw new Error('Missing BACKEND_API_URL environment variable')
+    }
+
+    // Patch student data
+    const backendResponse = await fetch(`${BACKEND_API_URL}/students/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+
+    if (!backendResponse.ok) {
+      const errorData = await backendResponse.json()
+      return NextResponse.json(
+        { success: false, error: errorData.message || 'Failed to update student' },
+        { status: backendResponse.status }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Student updated successfully'
+    })
+
+  } catch (error) {
+    console.error('Patch student error:', error)
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

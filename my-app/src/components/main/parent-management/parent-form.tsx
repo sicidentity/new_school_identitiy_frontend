@@ -55,16 +55,7 @@ export function ParentForm({ onSubmit, isSubmitting = false }: ParentFormProps) 
 
   const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full"
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreviewUrl(URL.createObjectURL(file));
-      form.setValue("picture", file as File);
-    } else {
-      setPreviewUrl("");
-      form.setValue("picture", undefined);
-    }
-  };
+  
 
   const handleSubmit = async (values: ParentFormValues) => {
     try {

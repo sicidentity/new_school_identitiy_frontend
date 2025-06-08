@@ -34,6 +34,7 @@ const studentSchema = z.object({
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   // parentPhone: z.string().min(10, "Phone number must be at least 10 digits"),
   address: z.string().optional(),
+  regNumber: z.string(),
   admissionDate: z.string().optional(),
   picture: z
     .instanceof(File)
@@ -80,6 +81,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       formData.append('parentId', values.parentId);
       formData.append('email', values.email);
       formData.append('phone', values.phone);
+      formData.append('regNumber', values.regNumber);
       
       // Add optional fields if they exist
       if (values.address) {
@@ -397,6 +399,25 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
                         <Input
                           className={inputClassName}
                           placeholder="john@example.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Registration Number Field */}
+                <FormField
+                  control={form.control}
+                  name="regNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Registration Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={inputClassName}
+                          placeholder="1234567"
                           {...field}
                         />
                       </FormControl>

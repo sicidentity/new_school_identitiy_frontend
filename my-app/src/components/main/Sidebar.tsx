@@ -28,7 +28,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { FiSettings, FiLogOut } from "react-icons/fi";
-import { FaTachometerAlt } from "react-icons/fa";
+import { FaChalkboardTeacher, FaTachometerAlt } from "react-icons/fa";
 import { MdManageAccounts } from "react-icons/md";
 import { FaUserGraduate } from "react-icons/fa";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -39,7 +39,7 @@ import { ComponentType } from "react";
 type SidebarItem = {
   title: string;
   url: string;
-  iconName: "dashboard" | "attendance" | "users" | "student" | "report" | "parent";
+  iconName: "dashboard" | "attendance" | "users" | "student" | "report" | "parent" | "class";
 };
 
 type SidebarProps = {
@@ -59,6 +59,7 @@ const iconMap: Record<SidebarItem["iconName"], ComponentType<{ className?: strin
   attendance: IoCalendarOutline,
   report: HiOutlineDocumentReport,
   parent: FaUserFriends,
+  class: FaChalkboardTeacher,
 };
 
 export function Sidebar({ items, user, activeItem }: SidebarProps) {
@@ -159,7 +160,8 @@ export function Sidebar({ items, user, activeItem }: SidebarProps) {
         </SidebarContent>
 
         <div className="px-3 py-2 border-t !mb-[2rem] border-gray-100">
-          <SidebarGroup>
+
+          <SidebarGroup className="!mb-[13%]">
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
