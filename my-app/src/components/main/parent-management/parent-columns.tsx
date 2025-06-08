@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ConfirmationModal } from '../../ui/confirmation-modal';
 import { Parent } from "@/types/models";
+import { toast } from 'sonner';
 
 interface ParentActionsCellProps {
   parentItem: Parent;
@@ -43,7 +44,7 @@ const ParentActionsCell: React.FC<ParentActionsCellProps> = ({ parentItem }) => 
       }
 
       console.log("Parent deleted successfully:", itemToDelete.id);
-      // alert(`Parent ${itemToDelete.name || 'Item'} deleted successfully!`); // Optional: replace with toast
+      toast.success(`Parent ${itemToDelete.name || ''} deleted successfully!`);
       router.refresh();
       closeModal();
 
@@ -60,19 +61,29 @@ const ParentActionsCell: React.FC<ParentActionsCellProps> = ({ parentItem }) => 
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
-          onClick={() => router.push(`/edit/parent/${parentItem.id}`)}
+          className="h-8 w-8 group hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/edit/parent/${parentItem.id}`);
+          }}
+          role="button"
+          aria-label="Edit parent"
         >
-          <Edit className="h-4 w-4" />
+          <Edit className="h-4 w-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200" />
           <span className="sr-only">Edit</span>
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
-          onClick={() => openModal(parentItem)}
+          className="h-8 w-8 group hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            openModal(parentItem);
+          }}
+          role="button"
+          aria-label="Delete parent"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform duration-200" />
           <span className="sr-only">Delete</span>
         </Button>
       </div>

@@ -39,14 +39,24 @@ export const columns = [
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => alert(`Edit entry: ${row.id}`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              alert(`Edit entry: ${row.id}`);
+            }}
+            role="button"
+            aria-label={`Edit attendance entry ${row.id}`}
           >
             <AiOutlineEdit className="h-4 w-4" />
           </Button>
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => alert(`Delete entry: ${row.id}`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              alert(`Delete entry: ${row.id}`);
+            }}
+            role="button"
+            aria-label={`Delete attendance entry ${row.id}`}
           >
             <AiOutlineDelete className="h-4 w-4" />
           </Button>

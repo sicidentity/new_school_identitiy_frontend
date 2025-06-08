@@ -5,6 +5,7 @@ import { Edit, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ConfirmationModal } from '../../ui/confirmation-modal';
+import { toast } from 'sonner';
 
 interface ClassActionsCellProps {
   classItem: Class;
@@ -42,7 +43,7 @@ const ClassActionsCell: React.FC<ClassActionsCellProps> = ({ classItem }) => {
       }
 
       console.log("Class deleted successfully:", classToDelete.id);
-      // alert(`Class ${classToDelete.name || 'Item'} deleted successfully!`); // Optional: replace with toast notification
+      toast.success(`Class ${classToDelete.name || ''} deleted successfully!`);
       router.refresh(); // Refresh data in the table
       closeModal();
 
@@ -59,19 +60,29 @@ const ClassActionsCell: React.FC<ClassActionsCellProps> = ({ classItem }) => {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
-          onClick={() => router.push(`/edit/classes/${classItem.id}`)}
+          className="h-8 w-8 group hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/edit/classes/${classItem.id}`);
+          }}
+          role="button"
+          aria-label="Edit class"
         >
-          <Edit className="h-4 w-4" />
+          <Edit className="h-4 w-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200" />
           <span className="sr-only">Edit</span>
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
-          onClick={() => openModal(classItem)}
+          className="h-8 w-8 group hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            openModal(classItem);
+          }}
+          role="button"
+          aria-label="Delete class"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform duration-200" />
           <span className="sr-only">Delete</span>
         </Button>
       </div>
