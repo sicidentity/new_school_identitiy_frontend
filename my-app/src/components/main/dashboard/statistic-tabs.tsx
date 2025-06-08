@@ -10,7 +10,7 @@ export function StatsTabs({ totalStudents, totalClasses, attendanceToday }: Stat
       {/* Total Students Card */}
       <Card className="border-none !p-4 shadow-sm hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center pb-2 gap-3">
-          <div className="w-9 h-9 rounded-md bg-emerald-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-md bg-[#268094] flex items-center justify-center">
             <FaUsers className="w-5 h-5 text-white" />
           </div>
           <CardTitle className="text-sm font-medium text-gray-500">
@@ -25,7 +25,7 @@ export function StatsTabs({ totalStudents, totalClasses, attendanceToday }: Stat
       {/* Start Classes Card */}
       <Card className="border-none !p-4 shadow-sm hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center pb-2 gap-3">
-          <div className="w-9 h-9 rounded-md bg-emerald-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-md bg-[#268094] flex items-center justify-center">
             <FaBookOpen className="w-5 h-5 text-white" />
           </div>
           <CardTitle className="text-sm font-medium text-gray-500">
@@ -40,7 +40,7 @@ export function StatsTabs({ totalStudents, totalClasses, attendanceToday }: Stat
       {/* Attendance Today Card */}
       <Card className="border-none !p-4 shadow-sm hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center pb-2 gap-3">
-          <div className="w-9 h-9 rounded-md bg-emerald-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-md bg-[#268094] flex items-center justify-center">
             <FaCalendarAlt className="w-5 h-5 text-white" />
           </div>
           <CardTitle className="text-sm font-medium text-gray-500">

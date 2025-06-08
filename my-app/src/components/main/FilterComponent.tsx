@@ -2,7 +2,7 @@
 
 import { FaFilter, FaSearch } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -12,22 +12,22 @@ import {
 
 export default function FilterSearchBar() {
   return (
-    <div className="flex items-center gap-1 justify-end pr-4">
+    <div className="flex items-center gap-1 justify-end pr-4 !mr-[2rem]">
       
       {/* Filter input + icon */}
-      <div className="flex h-9 w-[240px]">
+      <div className="flex h-9 w-[240px]! !mx-[1rem]">
         <Input
           type="text"
           placeholder="Filter Data"
-          className="rounded-r-none !rounded-l-sm border-r-0 !bg-white"
+          className="rounded-r-none !rounded-l-sm !border !border-gray-300 !pl-4 !bg-white"
         />
         <ContextMenu>
           <ContextMenuTrigger asChild>
             <div
-              className="flex items-center justify-center w-9 px-2 text-gray-500 bg-emerald-600 border border-input rounded-r-sm shadow-xs 
+              className="flex items-center justify-center w-9 px-2 text-gray-500 bg-[#268094] border border-input rounded-r-sm shadow-xs 
               transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             >
-              <FaFilter size={14} />
+              <FaFilter size={14} className="text-white" />
             </div>
           </ContextMenuTrigger>
           <ContextMenuContent className="w-40">
@@ -39,27 +39,24 @@ export default function FilterSearchBar() {
       </div>
 
       {/* Search input + icon */}
-      <div className=" flex h-9 w-[240px]">
+      <div className=" flex h-9 w-[240px] !mr-[1rem]">
         <Input
           type="text"
           placeholder="Search"
-          className="rounded-r-none !rounded-l-sm !bg-white border-r-0"
+          className="rounded-r-none !rounded-l-sm !border !border-gray-300 !pl-4 !bg-white"
         />
         <div
-          className="!bg-white !outline  outline-gray-200 flex items-center justify-center w-9 px-2 text-gray-500  border border-input rounded-r-sm shadow-xs 
+          className="!bg-[#268094] !outline  outline-gray-200 flex items-center justify-center w-9 px-2 text-gray-500  border border-input rounded-r-sm shadow-xs 
           transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
         >
-          <FaSearch size={14} />
+          <FaSearch size={14} className="text-white" />
         </div>
       </div>
 
       {/* Long button that mimics input look */}
-      <Button
-        className="h-9 px-4 w-[25%] !rounded-md !bg-teal-green hover:bg-green-600 text-white  shadow-xs transition-all border border-input focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-        variant="green"
-      >
-        Create New User
-      </Button>
+      <div className="ml-[-1rem]">
+        <Link href="/create_user" className="!text-[#fff] rounded bg-[#268094] !p-2">Create New User</Link>
+      </div>
     </div>
   );
 }
