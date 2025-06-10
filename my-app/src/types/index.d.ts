@@ -45,7 +45,7 @@ export interface StatsTabsProps {
   attendanceToday: number;
 }
 
-export interface DashboardData {
+declare interface DashboardData {
   totalStudents: number;
   totalClasses: number;
   attendanceToday: number;

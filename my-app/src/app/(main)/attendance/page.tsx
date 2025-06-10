@@ -4,6 +4,7 @@ import { ClassesResponse } from '@/types';
 import Link from 'next/link'
 import useSWR from 'swr';
 import { useEffect } from 'react';
+import Loader from "@/components/main/Loader";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -56,7 +57,11 @@ export default function ClassList() {
     </div>
   );
   
-  if (isLoading) return <div className="p-4">Loading classes...</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-screen">
+      <Loader size="1.5em" />
+    </div>
+  );
 
   return (
     <div className="bg-white min-h-screen p-5">

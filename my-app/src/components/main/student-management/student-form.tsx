@@ -124,7 +124,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
   }
 
   // Consistent styling
-  const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full"
+  const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full !px-[1rem]"
   const selectTriggerClassName = `${inputClassName} !bg-white !text-gray-900 !w-full`
 
   // Custom styles are applied via className props directly
@@ -144,7 +144,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
           <h2 className="text-lg font-medium">Add New Student</h2>
           <Button
             type="button"
-            className="!bg-teal-600 hover:!bg-teal-700 !rounded-md !py-2 !px-4 !text-white"
+            className="!bg-[#268094] hover:!bg-teal-700 !rounded-md !py-2 !px-4 !text-white"
             disabled={isSubmitting}
             onClick={form.handleSubmit(handleSubmit)}
           >

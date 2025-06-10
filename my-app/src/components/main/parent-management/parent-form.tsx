@@ -53,7 +53,7 @@ export function ParentForm({ onSubmit, isSubmitting = false }: ParentFormProps) 
     },
   });
 
-  const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full"
+  const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full !px-[1rem]"
 
   
 
@@ -103,7 +103,7 @@ export function ParentForm({ onSubmit, isSubmitting = false }: ParentFormProps) 
           <h2 className="text-lg font-medium">Add New Parent</h2>
           <Button
             type="button"
-            className="!bg-teal-600 hover:!bg-teal-700 !rounded-md !py-2 !px-4 !text-white"
+            className="!bg-[#268094] hover:!bg-teal-700 !rounded-md !py-2 !px-4 !text-white"
             disabled={isSubmitting}
             onClick={form.handleSubmit(handleSubmit)}
           >

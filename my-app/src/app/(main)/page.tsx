@@ -10,9 +10,8 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 import { DataTable } from '@/components/main/data-table/data-table';
 import { createAttendanceColumns } from '@/components/main/dashboard/attendance-columns';
-import { DashboardData } from '../../interface/testapi';
 import { useState } from 'react';
-import Loader from '@/components/main/Loader';
+import { DashboardData } from '../interface/testapi';
 
 // SWR Fetcher function
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -30,11 +29,7 @@ export default function DashboardPage() {
   ]);
 
   if (error) return <div>Error: {error.message}</div>;
-  if (!data) return (
-    <div className="flex items-center justify-center h-screen">
-      <Loader size="1.5em" />
-    </div>
-  );
+  if (!data) return <div>Loading dashboard...</div>;
 
   // Filter and sort attendances by class and date range
   const filteredAttendances = data.recentAttendances

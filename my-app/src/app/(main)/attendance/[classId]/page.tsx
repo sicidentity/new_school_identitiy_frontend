@@ -2,6 +2,7 @@
 import { DashboardStudent } from "@/types"
 import { DataTable } from "@/components/main/data-table/data-table"
 import { createStudentColumns } from "@/components/main/attendance/student-columns"
+import Loader from "@/components/main/Loader";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import useSWR from 'swr';
@@ -51,7 +52,7 @@ export default function StudentList({params}: {params: Promise<{ classId: string
     return (
       <div className="container mx-auto py-6">
         <div className="flex justify-center items-center h-64">
-          <p>Loading students...</p>
+          <Loader size="1.5em" />
         </div>
       </div>
     );

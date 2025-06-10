@@ -5,6 +5,7 @@
 import { DataTable } from '@/components/main/data-table/data-table';
 import { columns } from '@/components/main/attendance/student-attendance-columns';
 import StudentInfoCards from '@/components/main/StudentInfoCards';
+import Loader from "@/components/main/Loader";
 import { Attendance, TransformedStudent } from '@/types';
 import { use } from 'react';
 import useSWR from 'swr';
@@ -39,7 +40,7 @@ export default function StudentDetails({ params }: PageProps) {
   if (isLoading) {
     return (
       <div className="container mx-auto py-10">
-        <div className="text-center">Loading student data...</div>
+        <Loader size="1.5em" />
       </div>
     );
   }

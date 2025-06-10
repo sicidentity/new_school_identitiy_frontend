@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/main/data-table/data-table"
 import { createUserColumns } from '@/components/main/user-management/user-columns'
+import Loader from "@/components/main/Loader";
 import useSWR from 'swr'
 import { User, UsersResponse } from '@/types'
 
@@ -23,7 +24,7 @@ export default function UserManagementPage() {
   if (isLoading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
-        <p>Loading users...</p>
+       <Loader size="3em" />
       </div>
     );
   }

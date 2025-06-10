@@ -1,5 +1,6 @@
 // app/api/users/route.ts
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { Role } from '../../interface/testapi';
 
 // Define a simplified user interface for frontend use
@@ -36,12 +37,16 @@ export async function GET(): Promise<NextResponse<FrontendUserApiResponse>> {
     if (!process.env.BACKEND_API_URL) {
       throw new Error('Missing BACKEND_API_URL environment variable');
     }
-    
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token');
+
     const backendUrl = `${process.env.BACKEND_API_URL}/auth`;
     console.log('Fetching users from:', backendUrl);
     
     const response = await fetch(backendUrl, {
       headers: {
+        "Authorization": `Bearer ${token.value}`,
         'Content-Type': 'application/json'
       },
       next: { revalidate: 60 } // Revalidate every 60 seconds

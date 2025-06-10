@@ -5,6 +5,7 @@ import useSWR, { mutate } from 'swr'
 import { toast } from 'sonner'
 import { StudentForm } from "@/components/main/student-management/student-form"
 import { DataTable } from "@/components/main/data-table/data-table"
+import Loader from "@/components/main/Loader";
 import { createStudentColumns } from "@/components/main/student-management/student-columns"
 import { Student } from "@/types"
 import { useRouter } from 'next/navigation'
@@ -74,7 +75,7 @@ export default function StudentsPage() {
 
   if (isLoading || !classesData || !parentsData) return (
     <div className="flex items-center justify-center h-screen">
-      <div>Loading...</div>
+      <Loader size="1.5em" />
     </div>
   )
 
