@@ -31,7 +31,6 @@ export async function generateQRCode(studentId: string): Promise<CreateQrCodeRes
     });
 
     const responseText = await response.text();
-    console.log('Response text:', responseText);
 
     if (!response.ok) {
       let errorMessage = "Failed to generate QR Code";

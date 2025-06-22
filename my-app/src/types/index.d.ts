@@ -54,12 +54,14 @@ declare type Student = {
   name: string;
   email: string;
   age: number;
+  picture: string;
   classId: string;
   parentId: number;
   createdAt: string;
   updatedAt: string;
   class?: Class;
   parent?: Parent;
+  qrCode: QRCodeData;
 };
 
 declare interface QRCodeData {
@@ -67,6 +69,7 @@ declare interface QRCodeData {
   code: string;
   url: string;
   studentId: string;
+  validUntil: string;
 }
 
 declare interface CreateQrCodeResponse {
