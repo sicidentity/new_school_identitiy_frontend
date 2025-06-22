@@ -1,7 +1,9 @@
 @import "tailwindcss";
+@import "tailwindcss/preflight";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@tailwind utilities;
 
 @theme inline {
   --color-background: var(--background);
@@ -45,8 +47,6 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -76,6 +76,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 .dark {
@@ -120,3 +122,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Make sure to add this to your global CSS file or the Tooltip component's styles */
+[data-state='open'] .TooltipContent {
+  position: relative;
+}
+
+[data-state='open'] .TooltipContent::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background-color: #fff; /* Color of the tooltip's arrow */
+  transform: translate(-50%, -50%) rotate(45deg);
+  pointer-events: none;
+}
+
+
+/* Hide tooltip arrow */
+[data-radix-popper-content-wrapper] > svg {
+  display: none !important;
+}
+
