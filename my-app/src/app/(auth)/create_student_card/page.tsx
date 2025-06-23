@@ -74,49 +74,49 @@ const CreateStudentCardPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full md:w-[48vw] h-[95vh]">
-      <header className="flex flex-col items-center w-full md:w-[30vw] mb-6">
+    <div className="!flex !flex-col !items-center !justify-center !w-[48vw] !h-[95vh]">
+      <header className="!flex !flex-col !items-center !w-full !md:!w-[30vw] !mb-6">
         <Image
           src="/images/dot.svg"
           alt="Logo"
           width={50}
           height={50}
-          className="mb-4"
+          className="!mb-4"
         />
-        <h1 className="text-2xl text-black font-bold">Create Student Card</h1>
-        <p className="text-sm text-[#4a5568] mt-2 text-center">Enter student ID to generate student card.</p>
+        <h1 className="!text-2xl !text-black !font-bold">Create Student Card</h1>
+        <p className="!text-sm !text-[#4a5568] !mt-2 !text-center">Enter student ID to generate student card.</p>
       </header>
 
-      <div className="w-full max-w-md px-4 md:px-0 md:w-[30vw]">
+      <div className="!w-full !max-w-md !px-4 !md:!px-0 !md:!w-[30vw]">
         {errorMessage && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+          <div className="!bg-red-100 !border-l-4 !border-red-500 !text-red-700 !p-4 !mb-4 !rounded">
             <p>{errorMessage}</p>
           </div>
         )}
         
         {successMessage && (
-          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
+          <div className="!bg-green-100 !border-l-4 !border-green-500 !text-green-700 !p-4 !mb-4 !rounded">
             <p>{successMessage}</p>
           </div>
         )}
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="!space-y-4">
             <FormField
               control={form.control}
               name="studentId"
               render={({ field }) => (
                 <FormItem>
-                  <label className="text-sm text-[#4a5568] font-semibold block mb-1">Student ID</label>
+                  <label className="!text-sm !text-[#4a5568] !font-semibold !block !mb-1">Student ID</label>
                   <FormControl>
-                    <div className="border border-[#4a5568] rounded-sm w-full h-11 flex flex-row">
-                      <div className="border-r border-[#4a5568] h-full w-11 flex items-center justify-center">
-                        <FaGraduationCap className="text-[#4a5568] text-xl" />
+                    <div className="!border !border-[#4a5568] !rounded-sm !w-full !h-11 !flex !flex-row">
+                      <div className="!border-r !border-[#4a5568] !h-full !w-11 !flex !items-center !justify-center">
+                        <FaGraduationCap className="!text-[#4a5568] !text-xl" />
                       </div>
                       <input
                         type="text"
                         placeholder="Enter your student ID"
-                        className="w-full h-full px-4 outline-none"
+                        className="!w-full !h-full !px-4 !outline-none"
                         {...field}
                       />
                     </div>
@@ -129,15 +129,15 @@ const CreateStudentCardPage = () => {
             <button 
               type="submit" 
               disabled={isLoading} 
-              className="mt-6 bg-[#258094] text-white font-bold py-2 px-4 rounded-md w-full cursor-pointer disabled:opacity-70"
+              className="!mt-6 !bg-[#258094] !text-white !font-bold !py-2 !px-4 !rounded-md !w-full !cursor-pointer !disabled:opacity-70"
             >
               {isLoading ? 'Searching...' : 'Create Student Card'}
             </button>
           </form>
         </Form>
 
-        <div className="w-full flex items-center justify-center mt-6">
-          <Link href="/" className="text-sm text-[#4a5568] font-semibold hover:underline">
+        <div className="!w-full !flex !items-center !justify-center !mt-6">
+          <Link href="/" className="!text-sm !text-[#4a5568] !font-semibold !hover:underline">
             Back
           </Link>
         </div>

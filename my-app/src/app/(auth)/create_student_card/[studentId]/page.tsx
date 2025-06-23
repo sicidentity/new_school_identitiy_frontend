@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { LuDownload, LuRotateCcw } from "react-icons/lu";
+import Loader from "@/components/main/Loader";
 
 const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) => {
   const { studentId } = React.use(params);
@@ -72,69 +73,68 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
   }, [studentId]);
 
   const FrontCard = ({ className = "" }: { className?: string }) => (
-    <Card className={`w-80 h-52 ${className}`}>
-      <CardContent className="p-0 h-full bg-gradient-to-br from-blue-600 to-blue-800 text-white relative overflow-hidden">
-        <div className="p-4 flex gap-4">
-          <div className="flex-shrink-0">
+    <Card className={`!w-80 !h-52 ${className}`}>
+      <CardContent className="!p-0 !h-full !bg-gradient-to-br !from-blue-600 !to-blue-800 !text-white !relative !overflow-hidden">
+        <div className="!p-4 !flex !gap-4">
+          <div className="!flex-shrink-0">
             <Image
-              src="https://picsum.photos/80/96"
+              src={student.picture}
               alt={student?.name || "Student"}
               width={80}
               height={96}
-              className="w-20 h-24 object-cover rounded border-2 border-white/30"
+              className="!w-20 !h-24 !object-cover !rounded !border-2 !border-white/30"
             />
           </div>
-          <div className="flex-1 space-y-1">
-            <h3 className="font-bold text-lg leading-tight">{student?.name}</h3>
-            <p className="text-sm opacity-90">{student?.email}</p>
-            <div className="space-y-1">
-              <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/30">
+          <div className="!flex-1 !space-y-1">
+            <h3 className="!font-bold !text-lg !leading-tight">{student?.name}</h3>
+            <p className="!text-sm !opacity-90">{student?.email}</p>
+            <div className="!space-y-1">
+              <Badge variant="secondary" className="!text-xs !bg-white/20 !text-white !border-white/30">
                 {student?.class.description}
               </Badge>
-              <p className="text-xs opacity-80">ID: {student?.id}</p>
-              <p className="text-xs opacity-80">
+              <p className="!text-xs !opacity-80">ID: {student?.id}</p>
+              <p className="!text-xs !opacity-80">
                 {student?.class?.name} • Valid until {student?.qrCode?.validUntil}
               </p>
             </div>
           </div>
         </div>
-
-        <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -translate-y-10 translate-x-10"></div>
-        <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-8 -translate-x-8"></div>
+        <div className="!absolute !top-0 !right-0 !w-20 !h-20 !bg-white/5 !rounded-full !-translate-y-10 !translate-x-10" />
+        <div className="!absolute !bottom-0 !left-0 !w-16 !h-16 !bg-white/5 !rounded-full !translate-y-8 !-translate-x-8" />
       </CardContent>
     </Card>
   );
 
   const BackCard = ({ className = "" }: { className?: string }) => (
-    <Card className={`w-80 h-52 ${className}`}>
-      <CardContent className="p-0 h-full bg-gradient-to-br from-gray-700 to-gray-900 text-white relative overflow-hidden">
-        <div className="py-6 px-4 flex flex-row items-center justify-between h-full">
-          <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center">
+    <Card className={`!w-80 !h-52 ${className}`}>
+      <CardContent className="!p-0 !h-full !bg-gradient-to-br !from-gray-700 !to-gray-900 !text-white !relative !overflow-hidden">
+        <div className="!py-6 !px-4 !flex !flex-row !items-center !justify-between !h-full">
+          <div className="!w-32 !h-32 !bg-white !rounded-lg !flex !items-center !justify-center">
             {qrImg ? (
               <Image
                 src={qrImg}
                 alt="QR Code"
                 width={120}
                 height={120}
-                className="w-28 h-28"
+                className="!w-28 !h-28"
               />
             ) : (
-              <div className="w-20 h-20 bg-black relative">
-                <div className="absolute inset-1 bg-white"></div>
-                <div className="absolute inset-2 bg-black grid grid-cols-6 gap-px">
+              <div className="!w-20 !h-20 !bg-black !relative">
+                <div className="!absolute !inset-1 !bg-white" />
+                <div className="!absolute !inset-2 !bg-black !grid !grid-cols-6 !gap-px">
                   {Array.from({ length: 36 }).map((_, i) => (
-                    <div key={i} className={`${Math.random() > 0.5 ? "bg-white" : "bg-black"}`}></div>
+                <div key={i} className={`${Math.random() > 0.5 ? "!bg-white" : "!bg-black"}`} />
                   ))}
                 </div>
               </div>
             )}
           </div>
-          <div className="text-center space-y-2 flex-1 px-4">
-            <p className="text-xs opacity-60">This card remains property of the University</p>
-            <p className="text-xs opacity-80">Authorized Personnel Only</p>
-            <div className="mt-4 space-y-1">
-              <p className="text-xs opacity-60">For assistance contact:</p>
-              <p className="text-xs opacity-80">Student Services</p>
+          <div className="!text-center !space-y-2 !flex-1 !px-4">
+            <p className="!text-xs !opacity-60">This card remains property of the University</p>
+            <p className="!text-xs !opacity-80">Authorized Personnel Only</p>
+            <div className="!mt-4 !space-y-1">
+              <p className="!text-xs !opacity-60">For assistance contact:</p>
+              <p className="!text-xs !opacity-80">Student Services</p>
             </div>
           </div>
         </div>
@@ -274,100 +274,99 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="!flex !items-center !justify-center !w-[48vw] !h-[95vh]">
+        <Loader size="3em" />
       </div>
     );
   }
 
   if (errorMessage) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-red-500 text-lg">{errorMessage}</div>
+      <div className="!flex !items-center !justify-center !h-screen">
+        <div className="!text-red-500 !text-lg">{errorMessage}</div>
       </div>
     );
   }
 
   if (!student) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">No student data available.</div>
+      <div className="!flex !items-center !justify-center !w-[48vw] !h-[95vh]">
+        <div className="!text-lg">No student data available.</div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-[48vw] h-[95vh] py-8">
-      <div className="bg-white/10 p-3 text-center border-b border-white/20 mb-8">
-        <h2 className="font-bold text-lg">University</h2>
-        <p className="text-xs opacity-90">Student Identification Card</p>
+    <div className="!flex !flex-col !items-center !justify-center !w-[48vw] !h-[95vh] !py-8">
+      <div className="!bg-white/10 !p-3 !text-center !border-b !border-white/20 !mb-8">
+        <h2 className="!font-bold !text-lg">University</h2>
+        <p className="!text-xs !opacity-90">Student Identification Card</p>
       </div>
 
-      <div className="relative mb-8">
+      <div className="!relative !mb-8">
         <div
-          className={`relative w-80 h-52 transition-transform duration-700 transform-style-preserve-3d ${
-            isFlipped ? "rotate-y-180" : ""
+          className={`!relative !w-80 !h-52 !transition-transform !duration-700 !transform-style-preserve-3d ${
+            isFlipped ? "!rotate-y-180" : ""
           }`}
           style={{ transformStyle: "preserve-3d" }}
         >
-          <div className={`absolute inset-0 w-full h-full backface-hidden ${isFlipped ? "rotate-y-180" : ""}`}>
+          <div className={`!absolute !inset-0 !w-full !h-full !backface-hidden ${isFlipped ? "!rotate-y-180" : ""}`}>
             <FrontCard />
           </div>
-
-          <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 ${!isFlipped ? "rotate-y-180" : ""}`}>
+          <div className={`!absolute !inset-0 !w-full !h-full !backface-hidden !rotate-y-180 ${!isFlipped ? "!rotate-y-180" : ""}`}>
             <BackCard />
           </div>
         </div>
       </div>
 
-      <div className="fixed -top-[1000px] -left-[1000px] opacity-0 pointer-events-none">
+      <div className="!fixed !-top-[1000px] !-left-[1000px] !opacity-0 !pointer-events-none">
         <div ref={frontCardRef}>
           <FrontCard />
         </div>
-        <div ref={backCardRef} className="mt-4">
+        <div ref={backCardRef} className="!mt-4">
           <BackCard />
         </div>
       </div>
 
-      <div className="flex gap-4 mb-6">
+      <div className="!flex !gap-4 !mb-6">
         <Button 
           variant="outline" 
           onClick={() => setIsFlipped(!isFlipped)} 
-          className="flex items-center gap-2"
+          className="!flex !items-center !gap-2"
           disabled={isDownloading}
         >
-          <LuRotateCcw className="w-4 h-4" />
+          <LuRotateCcw className="!w-4 !h-4" />
           Flip Card
         </Button>
         <Button 
           onClick={handleDownload} 
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+          className="!flex !items-center !gap-2 !bg-blue-600 !hover:bg-blue-700"
           disabled={isDownloading}
         >
-          <LuDownload className="w-4 h-4" />
+          <LuDownload className="!w-4 !h-4" />
           {isDownloading ? 'Downloading...' : 'Download PNG'}
         </Button>
         <Button 
           onClick={handleDownloadPDF} 
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+          className="!flex !items-center !gap-2 !bg-green-600 !hover:bg-green-700"
           disabled={isDownloading}
         >
-          <LuDownload className="w-4 h-4" />
+          <LuDownload className="!w-4 !h-4" />
           {isDownloading ? 'Downloading...' : 'Download PDF'}
         </Button>
       </div>
 
-      <div className="text-center text-sm text-gray-600 max-w-md mb-8">
+      <div className="!text-center !text-sm !text-gray-600 !max-w-md !mb-8">
         <p>
           This digital student ID card contains all necessary information for campus access and identification. Click
           "Flip Card" to view the QR code on the back for digital verification.
         </p>
       </div>
 
-      <div className="text-center">
-        <p className="text-lg">
+      <div className="!text-center">
+        <p className="!text-lg">
           Return 
-          <Link href="/" className="text-blue-600 font-semibold ml-1 hover:underline">
+          <Link href="/" className="!text-blue-600 !font-semibold !ml-1 !hover:underline">
             Back
           </Link>
         </p>

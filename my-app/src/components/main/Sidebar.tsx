@@ -28,18 +28,16 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { FiSettings, FiLogOut } from "react-icons/fi";
-import { FaChalkboardTeacher, FaTachometerAlt } from "react-icons/fa";
+import { FaChalkboardTeacher, FaTachometerAlt, FaUserGraduate, FaUserFriends, FaAddressCard } from "react-icons/fa";
 import { MdManageAccounts } from "react-icons/md";
-import { FaUserGraduate } from "react-icons/fa";
 import { IoCalendarOutline } from "react-icons/io5";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { FaUserFriends } from "react-icons/fa";
 import { ComponentType } from "react";
 
 type SidebarItem = {
   title: string;
   url: string;
-  iconName: "dashboard" | "attendance" | "users" | "student" | "report" | "parent" | "class";
+  iconName: "dashboard" | "attendance" | "users" | "student" | "report" | "parent" | "class" | "card";
 };
 
 type SidebarProps = {
@@ -60,6 +58,7 @@ const iconMap: Record<SidebarItem["iconName"], ComponentType<{ className?: strin
   report: HiOutlineDocumentReport,
   parent: FaUserFriends,
   class: FaChalkboardTeacher,
+  card: FaAddressCard,
 };
 
 export function Sidebar({ items, user, activeItem }: SidebarProps) {
