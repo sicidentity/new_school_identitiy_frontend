@@ -86,6 +86,8 @@ export interface QRCode {
   code: string;
   studentId: string;
   student: Student;
+  url: string;
+  validUntil: Date;
   createdAt: Date;
   updatedAt: Date;
 }

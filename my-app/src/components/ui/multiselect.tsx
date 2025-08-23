@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 interface MultiSelectOption {
   label: string;
   value: string;
-  [key: string]: any; // Allows additional fields like email
+  email?: string; // Optional extra field used for search/display
 }
 
 interface MultiSelectProps {
@@ -136,7 +136,7 @@ export const MultiSelect = ({
           {/* Options list */}
           <div className="max-h-[280px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300/50 scrollbar-track-transparent">
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((option, index) => {
+              filteredOptions.map((option) => {
                 const isSelected = value.includes(option.value);
                 return (
                   <div

@@ -134,7 +134,7 @@ export default function StudentEditForm({
       setParents(Array.isArray(parentList) ? parentList : []);
     }).catch(console.error)
     .finally(() => setIsLoading(false))
-  }, [id])
+  }, [id, form])
 
   const handleForm = form.handleSubmit(async (values) => {
     const data = new FormData()

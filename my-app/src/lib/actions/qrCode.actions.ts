@@ -1,5 +1,6 @@
 'use server';
 
+import { CreateQrCodeResponse, GetQrCodeResponse, QRCodeData } from '@/types';
 import { cookies } from 'next/headers';
 
 const {
@@ -96,6 +97,8 @@ export const getQrCode = async (studentId: string): Promise<QRCodeData> => {
         errorMessage = errorData?.message || errorMessage;
       } catch (parseError) {
         errorMessage = responseText || errorMessage;
+        console.error('Failed to parse response as JSON:', parseError);
+      throw new Error(`Invalid JSON response: ${errorMessage}`);
       }
       
       throw new Error(errorMessage);
@@ -112,7 +115,8 @@ export const getQrCode = async (studentId: string): Promise<QRCodeData> => {
       id: '',
       code: responseData.qrCode,
       url: responseData.url || '',
-      studentId: studentId
+      studentId: studentId,
+      validUntil: responseData.validUntil || ''
     };
   } catch (err) {
     console.error('Error fetching QR Code:', err);

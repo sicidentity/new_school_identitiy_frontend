@@ -1,12 +1,13 @@
 'use server';
 
+import { AuthResponse, ForgotPasswordResponse, ResetPasswordResponse, UserResponse, VerifyEmailResponse } from '@/types';
 import { cookies } from 'next/headers';
 
 const {
   NEXT_PUBLIC_API_URL: API_URL
 } = process.env;
 
-export const SignIn = async (email: string, password: string): Promise<AuthResponse> => {
+export const SignIn = async (email: string, password: string): Promise<AuthResponse | null> => {
   try {
     if (!API_URL) {
       console.error("API URL is not configured");

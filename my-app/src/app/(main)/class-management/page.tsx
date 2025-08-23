@@ -8,7 +8,7 @@ import { DataTable } from '@/components/main/data-table/data-table';
 import { createClassColumns } from '@/components/main/class-management/class-columns';
 import { Class, Student } from '@/types/models';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,7 +22,15 @@ const VerifyEmailPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const email = localStorage.getItem('userEmail') || '';
+  const [email, setEmail] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  // Handle localStorage access safely
+  useEffect(() => {
+    setMounted(true);
+    const userEmail = localStorage.getItem('userEmail') || '';
+    setEmail(userEmail);
+  }, []);
 
   const formSchema = z.object({
     code: z.string().length(4, "Please enter a 4 digit code"),
@@ -60,6 +68,45 @@ const VerifyEmailPage = () => {
       setIsLoading(false);
     }
   };
+
+  // Prevent hydration mismatch and show loading state
+  if (!mounted) {
+    return (
+      <div className="!flex !flex-col !items-center !justify-center !w-full !md:!w-[48vw] !h-[95vh]">
+        <div className="!text-center">
+          <div className="!animate-spin !rounded-full !h-8 !w-8 !border-b-2 !border-[#258094] !mx-auto !mb-4"></div>
+          <p className="!text-sm !text-[#4a5568]">Loading verification...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if no email found
+  if (!email) {
+    return (
+      <div className="!flex !flex-col !items-center !justify-center !w-full !md:!w-[48vw] !h-[95vh]">
+        <div className="!text-center !max-w-md !px-4">
+          <Image
+            src="/images/password.svg"
+            alt="Logo"
+            width={50}
+            height={50}
+            className="!mb-4 !mx-auto"
+          />
+          <h1 className="!text-2xl !text-black !font-bold !mb-4">Email Not Found</h1>
+          <p className="!text-sm !text-[#4a5568] !mb-6">
+            No email address found. Please go back and enter your email first.
+          </p>
+          <Link 
+            href="/login" 
+            className="!bg-[#258094] !text-white !font-bold !py-2 !px-4 !rounded-md !inline-block"
+          >
+            Back to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>

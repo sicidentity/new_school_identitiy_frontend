@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { LuDownload, LuRotateCcw } from "react-icons/lu";
 import Loader from "@/components/main/Loader";
+import { CardParamProps } from '@/types';
+import {  Student } from '@/types/models';
 
 const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) => {
   const { studentId } = React.use(params);
@@ -19,8 +21,7 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
   const [isLoading, setIsLoading] = useState(false);
   const [student, setStudent] = useState<Student | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [qrImg, setQrImg] = useState('');
+  const [qrImg, setQrImg] = useState<string>();
   const [isFlipped, setIsFlipped] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -33,7 +34,6 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
     const getStudent = async () => {
       setIsLoading(true);
       setErrorMessage("");
-      setSuccessMessage("");
 
       try {
         const studentIdNumber = parseInt(studentId, 10);
@@ -52,8 +52,8 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
             if (result) {
               console.log("Student data fetched successfully:", result);
               setStudent(result);
-              setSuccessMessage("Student found!");
-              setQrImg(result.qrCode.url);
+              //newly added
+              setQrImg(result.qrCodes.at(-1)?.url);
             }
           } else {
             console.warn("Failed to generate QR code");
@@ -78,7 +78,7 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
         <div className="!p-4 !flex !gap-4">
           <div className="!flex-shrink-0">
             <Image
-              src={student.picture}
+              src={student?.picture || ""}
               alt={student?.name || "Student"}
               width={80}
               height={96}
@@ -93,9 +93,9 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
                 {student?.class.description}
               </Badge>
               <p className="!text-xs !opacity-80">ID: {student?.id}</p>
-              <p className="!text-xs !opacity-80">
-                {student?.class?.name} • Valid until {student?.qrCode?.validUntil}
-              </p>
+              {/* <p className="!text-xs !opacity-80">
+                {student?.class?.name} • Valid until {student?.qrCodes?.validUntil}
+              </p> */}
             </div>
           </div>
         </div>
@@ -359,7 +359,7 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
       <div className="!text-center !text-sm !text-gray-600 !max-w-md !mb-8">
         <p>
           This digital student ID card contains all necessary information for campus access and identification. Click
-          "Flip Card" to view the QR code on the back for digital verification.
+          &quot;Flip Card&quot; to view the QR code on the back for digital verification.
         </p>
       </div>
 

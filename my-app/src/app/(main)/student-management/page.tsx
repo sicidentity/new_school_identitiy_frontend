@@ -7,7 +7,7 @@ import { StudentForm } from "@/components/main/student-management/student-form"
 import { DataTable } from "@/components/main/data-table/data-table"
 import Loader from "@/components/main/Loader";
 import { createStudentColumns } from "@/components/main/student-management/student-columns"
-import { Student } from "@/types"
+import { Student } from "@/types/models"
 import { useRouter } from 'next/navigation'
 
 const fetcher = async (url: string) => {

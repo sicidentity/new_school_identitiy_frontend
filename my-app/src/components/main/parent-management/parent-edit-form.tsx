@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MultiSelect } from '@/components/ui/multiselect'
+import { Student } from '@/types/models'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -97,7 +98,7 @@ export default function ParentEditForm({
         const students = studentsResult.data || studentsResult
         
         // Format students for the multi-select FIRST
-        const formattedStudents = students.map((s: any) => ({
+        const formattedStudents = students.map((s: Student) => ({
           label: s.name,
           value: s.id,
           email: s.email
@@ -106,7 +107,7 @@ export default function ParentEditForm({
         setAllStudents(formattedStudents)
         
         // Get the current student IDs from the parent's students array
-        const currentStudentIds = parentData.students?.map((s: any) => s.id) || []
+        const currentStudentIds = parentData.students?.map((s: Student) => s.id) || []
         // Reset the entire form with the fetched data
         form.reset({
           name: parentData.name || '',

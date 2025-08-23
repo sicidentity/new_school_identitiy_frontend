@@ -3,14 +3,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { StudentApiResponse } from '@/types';
 
+// Payload type for updating a student
+type StudentUpdatePayload = {
+  [key: string]: unknown;
+  picture?: string;
+  b2FileId?: string;
+  b2FileName?: string;
+  phone?: string;
+  age?: number;
+  admissionDate?: string; // ISO string
+};
 
 const B2_ACCOUNT_ID = process.env.B2_ACCOUNT_ID;
 const B2_APPLICATION_KEY = process.env.B2_APPLICATION_KEY;
 const B2_BUCKET_ID = process.env.B2_BUCKET_ID;
 const BACKEND_API_URL = process.env.BACKEND_API_URL;
 const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME;
-
-
 
 async function uploadToBackblaze(file: File) {
   if (!B2_ACCOUNT_ID || !B2_APPLICATION_KEY || !B2_BUCKET_ID) {
@@ -94,7 +102,6 @@ async function deleteFromBackblaze(fileId: string, fileName: string) {
   });
 }
 
-
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -115,7 +122,7 @@ export async function PATCH(
 
     // Check content type
     const contentType = request.headers.get('content-type') || '';
-    let updateData: any = {};
+    let updateData: StudentUpdatePayload = {};
     let newFile: File | null = null;
     let oldFileData: { fileId: string; fileName: string } | null = null;
 
@@ -159,7 +166,7 @@ export async function PATCH(
     } 
     // Handle JSON data
     else if (contentType.includes('application/json')) {
-      updateData = await request.json();
+      updateData = (await request.json()) as StudentUpdatePayload;
     } else {
       return NextResponse.json(
         { success: false, error: 'Unsupported content type' },
@@ -168,7 +175,7 @@ export async function PATCH(
     }
 
     // Handle image upload for students
-    let newPictureData: any = null;
+    let newPictureData: { url: string; fileId: string; fileName: string } | null = null;
 
     if (newFile) {
       try {

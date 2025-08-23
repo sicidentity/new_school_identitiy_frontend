@@ -17,6 +17,10 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { MultiSelect } from '@/components/ui/multiselect'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Student } from '@/types/models'
+import { StudentOptionMultiSelect } from '@/types'
+
+// Local option type compatible with MultiSelect's expected shape
 
 const classSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -37,7 +41,7 @@ export default function ClassEditForm({
   onSubmit,
   isSubmitting = false,
 }: ClassEditFormProps) {
-  const [allStudents, setAllStudents] = useState<any[]>([])
+  const [allStudents, setAllStudents] = useState<StudentOptionMultiSelect[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const form = useForm<ClassEditFormValues>({
     resolver: zodResolver(classSchema),
@@ -60,7 +64,7 @@ export default function ClassEditForm({
         const students = await studentsRes.json()
         
         // Get the current student IDs
-        const currentStudentIds = cls.data?.students?.map((s: any) => s.id) || []
+        const currentStudentIds = cls.data?.students?.map((s: Student) => s.id) || []
         
         // Reset form with current values
         form.reset({
@@ -70,7 +74,7 @@ export default function ClassEditForm({
         })
         
         // Format students for the multi-select
-        const formattedStudents = students.data?.map((s: any) => ({
+        const formattedStudents = students.data?.map((s: Student) => ({
           label: s.name,
           value: s.id,
           email: s.email
@@ -85,7 +89,7 @@ export default function ClassEditForm({
     }
     
     fetchData()
-  }, [id])
+  }, [id, form])
 
   const handleForm = form.handleSubmit(async (values) => {
     try {
