@@ -26,7 +26,7 @@ export const getStudentById = async (id: string): Promise<Student> => {
     }
 
     const data = await response.json();
-    
+
     // Transform the API response to match the Student type
     const student: Student = {
       id: data.id,
@@ -44,7 +44,7 @@ export const getStudentById = async (id: string): Promise<Student> => {
       b2FileName: data.b2FileName,
       class: data.class,
       parent: data.parent,
-      qrCodes: data.qrCodes || [],
+      qrCodes: data.qrCode || [],
       attendances: data.attendances || [],
       smsNotifications: data.smsNotifications || [],
       createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),

@@ -214,6 +214,7 @@ export interface QRCode {
   id: string;
   code: string;
   studentId: number;
+  url: string;
   student: Student;
   createdAt: Date | string;
   updatedAt: Date | string;

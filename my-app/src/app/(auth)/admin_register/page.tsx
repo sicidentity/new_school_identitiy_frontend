@@ -12,7 +12,7 @@ import {
   Form
 } from '@/components/ui/form';
 import { MdDriveFileRenameOutline } from "react-icons/md";
-import { IoMail } from "react-icons/io5";
+import { IoMail, IoSchool } from "react-icons/io5";
 import { FaLock } from "react-icons/fa6";
 import { SignUp } from '@/lib/actions/user.actions';
 
@@ -27,6 +27,7 @@ const AdminRegister = () => {
     defaultValues: {
       name: "",
       email: "",
+      schoolId: '',
       password: ''
     },
   });
@@ -36,7 +37,7 @@ const AdminRegister = () => {
     setErrorMessage("");
 
     try {
-      const newUser = await SignUp(data.name, data.email, data.password);
+      const newUser = await SignUp(data.name, data.email, data.schoolId, data.password);
 
       if (newUser) {
         localStorage.setItem('userEmail', data.email);
@@ -106,6 +107,22 @@ const AdminRegister = () => {
             </div>
             {form.formState.errors.email && (
               <p className="!text-red-500 !text-sm">{form.formState.errors.email.message}</p>
+            )}
+
+            <label className="!text-sm !text-[#4a5568] !font-semibold !mb-[-1rem]">School ID</label>
+            <div className="!border !border-[#4a5568] !rounded-sm !w-[30vw] !h-[2.75rem] !flex !flex-row">
+              <div className="!border-r-[1px] !border-[#4a5568] !h-[2.7rem] !w-[2.7rem] !flex !items-center !justify-center">
+                <IoSchool className="!text-[#4a5568] !text-xl" />
+              </div>
+              <input
+                type="text"
+                placeholder="Enter school id"
+                className="!w-[27vw] !px-[1rem]"
+                {...form.register("schoolId")}
+              />
+            </div>
+            {form.formState.errors.schoolId && (
+              <p className="!text-red-500 !text-sm">{form.formState.errors.schoolId.message}</p>
             )}
 
             <label className="!text-sm !text-[#4a5568] !font-semibold !mb-[-1rem]">Password</label>

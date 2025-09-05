@@ -50,10 +50,10 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
             const result = await getStudentById(studentId);
 
             if (result) {
-              console.log("Student data fetched successfully:", result);
+              console.log("Student data fetched successfully:", result.qrCodes);
               setStudent(result);
               //newly added
-              setQrImg(result.qrCodes.at(-1)?.url);
+              setQrImg(result.qrCodes.url);
             }
           } else {
             console.warn("Failed to generate QR code");
@@ -73,14 +73,14 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
   }, [studentId]);
 
   const FrontCard = ({ className = "" }: { className?: string }) => (
-    <Card className={`!w-80 !h-52 ${className}`}>
-      <CardContent className="!p-0 !h-full !bg-gradient-to-br !from-blue-600 !to-blue-800 !text-white !relative !overflow-hidden">
+    <Card className={`!w-90 !h-52 ${className}`}>
+      <CardContent className="!p-0 !w-full !h-full !bg-gradient-to-br !from-sky-900 !to-sky-500 !text-white !relative !overflow-hidden !rounded-lg">
         <div className="!p-4 !flex !gap-4">
           <div className="!flex-shrink-0">
             <Image
               src={student?.picture || ""}
               alt={student?.name || "Student"}
-              width={80}
+              width={85}
               height={96}
               className="!w-20 !h-24 !object-cover !rounded !border-2 !border-white/30"
             />
@@ -106,8 +106,8 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
   );
 
   const BackCard = ({ className = "" }: { className?: string }) => (
-    <Card className={`!w-80 !h-52 ${className}`}>
-      <CardContent className="!p-0 !h-full !bg-gradient-to-br !from-gray-700 !to-gray-900 !text-white !relative !overflow-hidden">
+    <Card className={`!w-90 !h-52 ${className}`}>
+      <CardContent className="!p-0 !w-full !h-full !bg-gradient-to-br !from-gray-700 !to-gray-900 !text-white !relative !overflow-hidden !rounded-lg">
         <div className="!py-6 !px-4 !flex !flex-row !items-center !justify-between !h-full">
           <div className="!w-32 !h-32 !bg-white !rounded-lg !flex !items-center !justify-center">
             {qrImg ? (
