@@ -1,12 +1,13 @@
 'use server';
 
+import { AuthResponse, ForgotPasswordResponse, ResetPasswordResponse, UserResponse, VerifyEmailResponse } from '@/types';
 import { cookies } from 'next/headers';
 
 const {
   NEXT_PUBLIC_API_URL: API_URL
 } = process.env;
 
-export const SignIn = async (email: string, password: string): Promise<AuthResponse> => {
+export const SignIn = async (email: string, password: string): Promise<AuthResponse | null> => {
   try {
     if (!API_URL) {
       console.error("API URL is not configured");
@@ -49,7 +50,7 @@ export const SignIn = async (email: string, password: string): Promise<AuthRespo
   }
 }
 
-export const SignUp = async (name: string, email: string, password: string): Promise<AuthResponse> => {
+export const SignUp = async (name: string, email: string, schoolId: string, password: string): Promise<AuthResponse> => {
   try {
     if (!API_URL) {
       console.error("API URL is not configured");
@@ -62,7 +63,7 @@ export const SignUp = async (name: string, email: string, password: string): Pro
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, schoolId, password }),
       cache: 'no-store'
     });
 

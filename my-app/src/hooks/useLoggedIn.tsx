@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext, useMemo, ReactNode } from 'react';
 import { GetLoggedInUser } from '@/lib/actions/user.actions';
+import { LoggedInContextType } from '@/types';
 
 const LoggedInContext = createContext<LoggedInContextType>({
   isLoggedIn: false,

@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ParentApiResponse } from '@/types'
 import crypto from 'crypto'
 
+// Payload type for updating a parent
+// added newly
+type ParentUpdatePayload = {
+  [key: string]: unknown;
+  picture?: string;
+  b2FileId?: string;
+  b2FileName?: string;
+}
 
 const B2_ACCOUNT_ID = process.env.PARENTS_ACCOUNT_ID;
 const B2_APPLICATION_KEY = process.env.PARENTS_APPLICATION_KEY;
@@ -91,7 +99,6 @@ async function deleteFromBackblaze(fileId: string, fileName: string) {
   });
 }
 
-
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -111,7 +118,7 @@ export async function PATCH(
 
     // Check content type
     const contentType = request.headers.get('content-type') || '';
-    let updateData: any = {};
+    let updateData: ParentUpdatePayload = {};
     let newFile: File | null = null;
     let oldFileData: { fileId: string; fileName: string } | null = null;
 
@@ -139,7 +146,7 @@ export async function PATCH(
     } 
     // Handle JSON data
     else if (contentType.includes('application/json')) {
-      updateData = await request.json();
+      updateData = (await request.json()) as ParentUpdatePayload;
     } else {
       return NextResponse.json(
         { success: false, error: 'Unsupported content type' },
@@ -148,7 +155,7 @@ export async function PATCH(
     }
 
     // Handle image upload for parents
-    let newPictureData: any = null;
+    let newPictureData: { url: string; fileId: string; fileName: string } | null = null;
 
     if (newFile) {
       try {

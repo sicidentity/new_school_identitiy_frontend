@@ -7,19 +7,18 @@ import FilterSearchBar from "@/components/main/FilterComponent";
 import { Sidebar } from "@/components/main/Sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { GetLoggedInUser } from '@/lib/actions/user.actions';
-import { User } from "@/types";
 import Loader from "@/components/main/Loader";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; avatarUrl?: string } | null | undefined>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const loggedInUser = await GetLoggedInUser();
-        setUser(loggedInUser);
+        setUser(loggedInUser || null);
 
         if (!loggedInUser) {
           router.push('/login');

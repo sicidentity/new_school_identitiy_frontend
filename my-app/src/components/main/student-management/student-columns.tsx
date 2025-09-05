@@ -7,7 +7,7 @@ import { Avatar } from "../data-table/Avatar";
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ConfirmationModal } from '../../ui/confirmation-modal';
-import { Student } from "@/types"; // Assuming Student type is in @/types
+import { Student } from "@/types/models";
 import { toast } from 'sonner';
 
 interface StudentManagementActionsCellProps {

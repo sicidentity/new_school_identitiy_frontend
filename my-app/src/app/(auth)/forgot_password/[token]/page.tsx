@@ -17,7 +17,7 @@ import {
 import { FaLock } from "react-icons/fa6";
 import { ResetPassword } from '@/lib/actions/user.actions';
 
-const ResetPasswordPage = ({ params }: { params: Promise<ParamProps['params']> }) => {
+const ResetPasswordPage = ({ params }: { params: Promise<{ token: string }> }) => {
   const { token } = React.use(params);
   const router = useRouter();
 

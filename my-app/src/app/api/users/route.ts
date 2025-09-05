@@ -39,14 +39,25 @@ export async function GET(): Promise<NextResponse<FrontendUserApiResponse>> {
     }
 
     const cookieStore = await cookies();
-    const token = cookieStore.get('token');
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized: missing auth token',
+          details: 'No token cookie present'
+        },
+        { status: 401 }
+      );
+    }
 
     const backendUrl = `${process.env.BACKEND_API_URL}/auth`;
     console.log('Fetching users from:', backendUrl);
     
     const response = await fetch(backendUrl, {
       headers: {
-        "Authorization": `Bearer ${token.value}`,
+        "Authorization": `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       next: { revalidate: 60 } // Revalidate every 60 seconds

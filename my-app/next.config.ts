@@ -45,6 +45,7 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-use-effect-event": "./polyfills/useEffectEvent.ts",
     },
   },
+  output: 'standalone'
 };
 
 export default nextConfig;

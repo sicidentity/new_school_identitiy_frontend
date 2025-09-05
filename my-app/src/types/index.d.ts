@@ -98,6 +98,13 @@ export interface Student {
   smsNotifications: SMSNotification[];
 }
 
+type StudentOptionMultiSelect = {
+  label: string
+  value: string
+  email: string
+}
+
+
 export interface StudentRequest {
   name: string;
   age: number;
@@ -207,6 +214,7 @@ export interface QRCode {
   id: string;
   code: string;
   studentId: number;
+  url: string;
   student: Student;
   createdAt: Date | string;
   updatedAt: Date | string;
@@ -354,6 +362,7 @@ declare type UserResponse = {
 
 declare type CreateQrCodeResponse = {
   studentId: string;
+  qrCode: QRCodeData;
 };
 
 declare type Student = {
@@ -387,5 +396,11 @@ declare interface CreateQrCodeResponse {
 declare interface GetQrCodeResponse {
   qrCode: string;
   url: string;
+
+
+  //added lines
+   validUntil?: string;
+  id?: string;
+  studentId?: string;
 }
 

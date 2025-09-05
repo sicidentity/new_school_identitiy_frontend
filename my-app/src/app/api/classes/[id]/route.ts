@@ -3,12 +3,19 @@ import { ClassApiResponse } from '@/types'
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL;
 
+// Payload shape for updating a class
+interface UpdateClassPayload {
+  name?: string;
+  description?: string;
+  studentIds?: string[];
+}
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json(
         { success: false, error: 'Class ID is required' },
@@ -22,7 +29,7 @@ export async function PATCH(
 
     // Check content type
     const contentType = request.headers.get('content-type') || '';
-    let updateData: any = {};
+    let updateData: Partial<UpdateClassPayload> = {};
 
     // Handle form data
     if (contentType.includes('multipart/form-data')) {
@@ -30,19 +37,28 @@ export async function PATCH(
       
       // Extract fields (classes don't have files)
       formData.forEach((value, key) => {
-        if (typeof value === 'string') {
+        if (typeof value !== 'string') return;
+        if (key === 'name') {
+          updateData.name = value;
+        } else if (key === 'description') {
+          updateData.description = value;
+        } else if (key === 'studentIds') {
           try {
-            // Try to parse JSON strings
-            updateData[key] = JSON.parse(value);
+            const parsed = JSON.parse(value);
+            if (Array.isArray(parsed)) {
+              updateData.studentIds = parsed.map(String);
+            }
           } catch {
-            updateData[key] = value;
+            // support single value
+            updateData.studentIds = value ? [value] : [];
           }
         }
       });
     } 
     // Handle JSON data
     else if (contentType.includes('application/json')) {
-      updateData = await request.json();
+      const body = await request.json();
+      updateData = body as Partial<UpdateClassPayload>;
     } else {
       return NextResponse.json(
         { success: false, error: 'Unsupported content type' },
