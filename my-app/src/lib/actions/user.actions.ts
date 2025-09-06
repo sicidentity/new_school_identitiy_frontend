@@ -7,11 +7,13 @@ const {
   NEXT_PUBLIC_API_URL: API_URL
 } = process.env;
 
-export const SignIn = async (email: string, password: string): Promise<AuthResponse | null> => {
+export const SignIn = async (email: string, password: string): Promise<AuthResponse> => {
   try {
     if (!API_URL) {
-      console.error("API URL is not configured");
+      throw new Error("API URL is not configured");
     }
+
+    console.log("Attempting to sign in with API URL:", API_URL);
 
     const response = await fetch(`${API_URL}/auth/signin`, {
       method: "POST",
@@ -22,19 +24,25 @@ export const SignIn = async (email: string, password: string): Promise<AuthRespo
       cache: 'no-store'
     });
 
-    const responseClone = response.clone();
-
-    if (!response.ok) {
-      const errorData = await responseClone.json();
-      console.error('Error in signin response', errorData);
-    }
+    console.log("Sign in response status:", response.status);
 
     const data: AuthResponse = await response.json();
 
+    if (!response.ok) {
+      console.error('Error in signin response', data);
+      throw new Error(data.error || data.message || 'Login failed');
+    }
+
+    // Store token in HTTP-only cookie
     if (data.token) {
       try {
         const cookieStore = await cookies();
-        cookieStore.set('token', data.token, { secure: true, httpOnly: true });
+        cookieStore.set('token', data.token, { 
+          secure: true, 
+          httpOnly: true,
+          sameSite: 'strict',
+          maxAge: 60 * 60 * 24 * 7 // 7 days
+        });
         console.log('Token stored successfully');
       } catch (storeError) {
         console.error('Error storing token:', storeError);
@@ -48,7 +56,7 @@ export const SignIn = async (email: string, password: string): Promise<AuthRespo
     console.error("Sign in error:", error);
     throw error;
   }
-}
+};
 
 export const SignUp = async (name: string, email: string, schoolId: string, password: string): Promise<AuthResponse> => {
   try {

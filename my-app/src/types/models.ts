@@ -1,111 +1,174 @@
-/**
- * Data models for the application
- * These interfaces represent the data structures used throughout the app
- */
-
 export enum Role {
   ADMIN = 'ADMIN',
-  SECURITY = 'SECURITY'
+  SECURITY = 'SECURITY',
+  TEACHER = 'TEACHER',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+}
+
+export interface School {
+  id: string;                // UUID primary key
+  name: string;
+  code: string;              // Unique
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  logo?: string | null;
+  website?: string | null;
+  principal?: string | null;
+  isActive: boolean;         // Defaults to true
+  tenantKey: string;         // Unique, UUID, maps to 'tenant_key'
+  encryptionKey?: string | null; // UUID, maps to 'encryption_key'
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
+  classes: Class[];
+  students: Student[];
+  users: User[];
 }
 
 export interface User {
-  id: string;
-  email: string;
+  id: string;                // UUID primary key
+  role?: Role | null;        // Optional role enum
+  email: string;             // Unique
   name: string;
-  role?: Role;
-  picture?: string;
-  resetToken?: string;
-  resetTokenExpiry?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  resetToken?: string | null;
+  resetTokenExpiry?: Date | null;
+  isEmailVerified: boolean;  // Defaults to false
+  verificationCode?: string | null;
+  verificationCodeExpiry?: Date | null;
+  password: string;
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
+  picture?: string | null;
+  schoolId: string;          // Foreign key, maps to 'school_id'
+  school?: School | null;    // Optional relation object
+
+  // Indexes: schoolId, schoolId+email
 }
 
 export interface Student {
-  id: number; // 7-digit numeric ID
+  id: string;                // UUID primary key
   name: string;
   age: number;
-  phone: string;
-  email: string;
-  regNumber: string;
-  admissionDate: Date;
+  classId: string;           // Foreign key, maps to 'class_id'
+  parentId: string;          // Foreign key, maps to 'parent_id'
+  picture?: string | null;
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
   address: string;
-  classId: string;
-  parentId: string;
-  picture?: string;
-  b2FileId?: string;
-  b2FileName?: string;
-  class: Class;
-  parent: Parent;
-  qrCodes: QRCode[];
+  admissionDate: Date;
+  b2FileId?: string | null;
+  b2FileName?: string | null;
+  email: string;             // Unique
+  phone: string;             // Unique
+  regNumber: string;         // Unique
+  schoolId: string;          // Foreign key, maps to 'school_id'
   attendances: Attendance[];
+  qrCode?: QRCode | null;
   smsNotifications: SMSNotification[];
-  createdAt: Date;
-  updatedAt: Date;
+  class?: Class | null;
+  parent?: Parent | null;
+  school?: School | null;
+
+  // Indexes: schoolId, schoolId+classId, schoolId+parentId, schoolId+regNumber 
 }
 
-
 export interface Class {
-  id: string;
+  id: string;                // UUID primary key
   name: string;
-  description?: string;
-  students: Student[];
+  description?: string | null;
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
+  schoolId: string;          // Foreign key, maps to 'school_id'
   attendances: Attendance[];
-  createdAt: Date;
-  updatedAt: Date;
+  school?: School | null;
+  students: Student[];
+
+  // Indexes: schoolId, schoolId+name
 }
 
 export interface Parent {
-  id: string;
+  id: string;                // UUID primary key
   name: string;
-  phone: string;
-  email: string;
-  students: Student[];
-  picture?: string;
-  address?: string;
+  phone: string;             // Unique
+  email: string;             // Unique
+  address: string;
+  picture?: string | null;
+  deviceToken?: string | null; // Maps to 'device_token'
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
+  notifications?: Notification[];
   smsNotifications: SMSNotification[];
-  createdAt: Date;
-  updatedAt: Date;
+  students: Student[];
+
+  // Table maps to 'parents'
 }
 
 export interface Attendance {
-  id: string;
-  studentId: string;
-  classId: string;
-  checkInTime: Date;
-  checkOutTime?: Date;
+  id: string;                // UUID primary key
+  studentId: string;         // Foreign key, maps to 'student_id'
+  classId: string;           // Foreign key, maps to 'class_id'
+  checkInTime?: Date | null; // Maps to 'check_in_time'
+  checkOutTime?: Date | null;// Maps to 'check_out_time'
   year: number;
+  duration?: number | null;
   day: number;
-  student: Student;
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
+  status: string;            // Defaults to "present"
   class: Class;
-  createdAt: Date;
-  updatedAt: Date;
+  student: Student;
+
+  // Indexes: studentId, classId, studentId+year
+  // Table maps to 'attendances'
 }
 
 export interface QRCode {
-  id: string;
-  code: string;
-  studentId: string;
-  student: Student;
+  id: string;                // UUID primary key
+  studentId: string;         // Unique foreign key
+  code: string;              // Unique
   url: string;
   validUntil: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date;           // Defaults to now
+  updatedAt: Date;           // UpdatedAt field
+  student: Student;
+
+  // Indexes: studentId
+  // Table maps to 'qr_codes'
 }
 
 export interface SMSNotification {
-  id: string;
-  studentId: string;
-  parentId: string;
+  id: string;                // UUID primary key
+  studentId: string;         // Foreign key, maps to 'student_id'
+  parentId: string;          // Foreign key, maps to 'parent_id'
   status: string;
   message: string;
-  sentAt: Date;
-  student: Student;
+  sentAt: Date;              // Defaults to now, maps to 'sent_at'
+  createdAt: Date;           // Defaults to now, maps to 'created_at'
+  updatedAt: Date;           // UpdatedAt field, maps to 'updated_at'
   parent: Parent;
-  createdAt: Date;
-  updatedAt: Date;
+  student: Student;
+
+  // Indexes: studentId, parentId
+  // Table maps to 'sms_notifications'
 }
 
-// API Response types
+export interface Notification {
+  id: string;                // UUID primary key
+  parentId: string;          // Foreign key, maps to 'parent_id'
+  title: string;
+  message: string;
+  data?: string | null;
+  read: boolean;             // Defaults to false
+  sentAt: Date;              // Defaults to now
+  readAt?: Date | null;
+  parent: Parent;
+
+  // Indexes: parentId, parentId+read
+  // Table maps to 'notifications'
+}
+
+
+// API Response structures
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -113,7 +176,6 @@ export interface ApiResponse<T> {
   timestamp: string;
 }
 
-// Pagination types
 export interface PaginatedResponse<T> {
   data: T[];
   meta: {
@@ -124,7 +186,6 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// Query parameters
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -138,7 +199,7 @@ export interface StudentQueryParams extends PaginationParams {
 }
 
 export interface AttendanceQueryParams extends PaginationParams {
-  studentId?: number;
+  studentId?: string;
   classId?: string;
   date?: string;
   status?: 'present' | 'absent' | 'late';

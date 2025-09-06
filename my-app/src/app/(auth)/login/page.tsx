@@ -8,18 +8,18 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInFormSchema } from '@/lib/utils';
-import {
-  Form
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { IoMail } from "react-icons/io5";
 import { FaLock } from "react-icons/fa6";
 import { SignIn } from '@/lib/actions/user.actions';
+import { useUser } from '@/app/contexts/UserContext';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
+  const { setUser } = useUser(); // Add this line
   const formSchema = SignInFormSchema();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,17 +63,21 @@ const Login = () => {
         localStorage.setItem('userEmail', data.email);
       }
       
-      const newUser = await SignIn(data.email, data.password);
+      const response = await SignIn(data.email, data.password);
 
-      if (newUser) {
-        router.push('/');
+      if (response && response.success && response.user) {
+        // Set user data in context immediately after successful login
+        setUser(response.user);
+        router.push('/dashboard'); // or wherever you want to redirect
+      } else {
+        throw new Error(response?.error || response?.message || 'Login failed');
       }
     } catch (error: unknown) {
       console.error("Error during login:", error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage("Failed to send reset instructions. Please try again later.");
+        setErrorMessage("Login failed. Please try again later.");
       }
     } finally {
       setIsLoading(false);
@@ -152,7 +156,7 @@ const Login = () => {
           <button 
             type="submit" 
             disabled={isLoading} 
-            className="!mt-6 !bg-[#258094] !text-white !font-bold !py-2 !px-4 !rounded-md !w-[30vw] !cursor-pointer"
+            className="!mt-6 !bg-[#258094] !text-white !font-bold !py-2 !px-4 !rounded-md !w-[30vw] !cursor-pointer disabled:opacity-50"
           >
             {isLoading ? 'Logging In...' : 'Login'}
           </button>

@@ -8,18 +8,19 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormSchema } from '@/lib/utils';
-import {
-  Form
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { IoMail, IoSchool } from "react-icons/io5";
 import { FaLock } from "react-icons/fa6";
 import { SignUp } from '@/lib/actions/user.actions';
+import { useUser } from '@/app/contexts/UserContext';
+
 
 const AdminRegister = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const { setUser } = useUser();
   const formSchema = FormSchema();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,18 +38,24 @@ const AdminRegister = () => {
     setErrorMessage("");
 
     try {
-      const newUser = await SignUp(data.name, data.email, data.schoolId, data.password);
+      const response = await SignUp(data.name, data.email, data.schoolId, data.password);
 
-      if (newUser) {
+      if (response.success && response.user) {
+        // Set user in context immediately
+        setUser(response.user);
+        
+        // Store email for verification if needed
         localStorage.setItem('userEmail', data.email);
         router.push('/verify_email');
+      } else {
+        throw new Error(response.error || response.message || 'Registration failed');
       }
     } catch (error: unknown) {
       console.error("Error during registration:", error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage("Failed to send reset instructions. Please try again later.");
+        setErrorMessage("Failed to register. Please try again later.");
       }
     } finally {
       setIsLoading(false);
@@ -144,7 +151,7 @@ const AdminRegister = () => {
           <button 
             type="submit" 
             disabled={isLoading} 
-            className="!mt-6 !bg-[#258094] !text-white !font-bold !py-2 !px-4 !rounded-md !w-[30vw] !cursor-pointer"
+            className="!mt-6 !bg-[#258094] !text-white !font-bold !py-2 !px-4 !rounded-md !w-[30vw] !cursor-pointer disabled:opacity-50"
           >
             {isLoading ? 'Registering...' : 'Register'}
           </button>

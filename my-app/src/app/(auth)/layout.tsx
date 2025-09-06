@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { UserProvider } from '@/app/contexts/UserContext';
 
 export default function RootLayout({
   children,
@@ -16,7 +17,9 @@ export default function RootLayout({
         />
       </div>
       <div className="!auth-asset">
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
       </div>
     </main>
   );

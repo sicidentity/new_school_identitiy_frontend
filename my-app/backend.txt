@@ -17,6 +17,28 @@ enum Role {
   SECURITY
 }
 
+model School {
+  id            String    @id @default(uuid())
+  name          String
+  code          String    @unique
+  address       String?
+  phone         String?
+  email         String?
+  logo          String?
+  website       String?
+  principal     String?
+  isActive      Boolean   @default(true)?
+  tenantKey     String    @unique @default(uuid()) @map("tenant_key")
+  encryptionKey String?   @default(uuid()) @map("encryption_key")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  classes       Class[]
+  students      Student[]
+  users         User[]
+
+  @@map("schools")
+}
+
 model User {
   id        String   @id @default(uuid())
   role      Role?

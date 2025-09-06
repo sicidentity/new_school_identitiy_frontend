@@ -314,6 +314,7 @@ export interface DataTableProps<TData, TValue> {
 } 
 
 declare interface AuthResponse {
+  error: string | undefined;
   token?: string;
   user?: {
     name: string;

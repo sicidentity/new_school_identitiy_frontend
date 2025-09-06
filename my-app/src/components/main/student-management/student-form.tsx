@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from 'next/image'
 import { Parent } from '@/types/models'
+import { useUser } from "@/app/contexts/UserContext"
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -54,6 +55,7 @@ interface StudentFormProps {
 
 export function StudentForm({ onSubmit, isSubmitting = false, classes, parents = [] }: StudentFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>("")
+  const { schoolId, user, isLoading } = useUser();
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
@@ -71,6 +73,11 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
 
   const handleSubmit = async (values: StudentFormValues) => {
     try {
+      // Check if user is authenticated and has schoolId
+      if (!user || !schoolId) {
+        throw new Error('User not authenticated or missing school information');
+      }
+  
       // Create FormData object
       const formData = new FormData();
       
@@ -82,6 +89,9 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       formData.append('email', values.email);
       formData.append('phone', values.phone);
       formData.append('regNumber', values.regNumber);
+      
+      // ✅ Add schoolId from global state - user never inputs this!
+      formData.append('schoolId', schoolId);
       
       // Add optional fields if they exist
       if (values.address) {
@@ -100,18 +110,20 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       // Submit the form data directly to the API endpoint
       const response = await fetch('/api/students', {
         method: 'POST',
+        credentials: 'include', // Include cookies for authentication
         body: formData,
       });
       
       if (!response.ok) {
-        throw new Error('Failed to submit student data');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to submit student data');
       }
       
       const result = await response.json();
       
       // Call the original onSubmit with the result
       onSubmit(values);
-
+  
       // Reset the form and clear preview after success
       form.reset();
       setPreviewUrl("");
@@ -121,7 +133,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       console.error('Error submitting form:', error);
       throw error;
     }
-  }
+  };
 
   // Consistent styling
   const inputClassName = "!border-1 !rounded-md focus:outline-none focus:!ring-2 focus:!ring-teal-500 !border-gray-300 !w-full !px-[1rem]"
