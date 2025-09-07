@@ -64,13 +64,24 @@ const Login = () => {
       }
       
       const response = await SignIn(data.email, data.password);
-
-      if (response && response.success && response.user) {
+    
+      // Check for the properties that actually exist in your backend response
+      if (response.token && response.user) {
+        // Create user object matching your User context interface
+        const userData = response.user as { id: string; name: string; email: string; schoolId: string };
+        const user = {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          schoolId: userData.schoolId,
+        };
+        
         // Set user data in context immediately after successful login
-        setUser(response.user);
+        setUser(user);
         router.push('/dashboard'); // or wherever you want to redirect
       } else {
-        throw new Error(response?.error || response?.message || 'Login failed');
+        // If no token or user, something went wrong
+        throw new Error(response?.error || 'Login failed - invalid response');
       }
     } catch (error: unknown) {
       console.error("Error during login:", error);

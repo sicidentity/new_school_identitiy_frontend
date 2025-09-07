@@ -1,5 +1,4 @@
 'use client';
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
@@ -34,27 +33,35 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Function to fetch user data from your API
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch('/api/user/profile', {
-        credentials: 'include', // Include cookies
-      });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Check for persisted user data on mount (optional)
   useEffect(() => {
-    fetchUserData();
+    const checkPersistedUser = () => {
+      try {
+        // You could check localStorage, sessionStorage, or make an API call here
+        // For now, just set loading to false since user will be set programmatically
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        }
+      } catch (error) {
+        console.error('Error checking persisted user:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkPersistedUser();
   }, []);
+
+  // Update localStorage when user changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const value = {
     user,

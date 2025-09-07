@@ -50,10 +50,10 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
             const result = await getStudentById(studentId);
 
             if (result) {
-              console.log("Student data fetched successfully:", result.qrCodes);
+              console.log("Student data fetched successfully:", result.qrCode);
               setStudent(result);
               //newly added
-              setQrImg(result.qrCodes.url);
+              setQrImg(result.qrCode?.url);
             }
           } else {
             console.warn("Failed to generate QR code");
@@ -90,7 +90,7 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
             <p className="!text-sm !opacity-90">{student?.email}</p>
             <div className="!space-y-1">
               <Badge variant="secondary" className="!text-xs !bg-white/20 !text-white !border-white/30">
-                {student?.class.description}
+                {student?.class?.description || 'No class assigned'}
               </Badge>
               <p className="!text-xs !opacity-80">ID: {student?.id}</p>
               {/* <p className="!text-xs !opacity-80">

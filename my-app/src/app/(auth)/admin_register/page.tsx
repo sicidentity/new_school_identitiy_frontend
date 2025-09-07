@@ -40,9 +40,22 @@ const AdminRegister = () => {
     try {
       const response = await SignUp(data.name, data.email, data.schoolId, data.password);
 
-      if (response.success && response.user) {
-        // Set user in context immediately
-        setUser(response.user);
+      if ((response as any).user) {
+        // Use the email as a fallback ID if user ID is not provided
+        const userId = response.user?.email || 'temp_' + Math.random().toString(36).substr(2, 9);
+        const user = {
+          id: userId,
+          name: response.user?.name || data.name,
+          email: response.user?.email || data.email,
+          schoolId: data.schoolId,
+          role: 'ADMIN',
+          password: data.password, // Storing password temporarily for verification
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        // Set user in context
+        setUser(user);
         
         // Store email for verification if needed
         localStorage.setItem('userEmail', data.email);
