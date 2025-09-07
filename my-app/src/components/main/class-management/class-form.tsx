@@ -39,7 +39,8 @@ interface ClassFormProps {
 }
 
 export function ClassForm({ onSubmit, isSubmitting = false, students }: ClassFormProps) {
-  const { schoolId, user, isLoading } = useUser(); // Add this line
+  const {  user, isLoading } = useUser(); // Add this line
+  const schoolId = user?.schoolId;
   const form = useForm<ClassFormValues>({
     resolver: zodResolver(classSchema),
     defaultValues: {

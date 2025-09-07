@@ -55,7 +55,8 @@ interface StudentFormProps {
 
 export function StudentForm({ onSubmit, isSubmitting = false, classes, parents = [] }: StudentFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>("")
-  const { schoolId, user, isLoading } = useUser();
+  const { user, isLoading } = useUser();
+  const schoolId = user?.schoolId;
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
