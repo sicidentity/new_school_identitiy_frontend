@@ -253,21 +253,24 @@ export async function POST(request: Request) {
     const studentData = {
       name: formData.get('name') as string,
       age: Number(formData.get('age')),
-      classId: formData.get('classId') as string,
-      parentId: formData.get('parentId') as string,
       email: formData.get('email') as string,
+      address: formData.get('address') as string,
       phone: formData.get('phone') as string,
+      picture: pictureData?.url,
       regNumber:
         Array(6)
           .fill('')
           .map(() => String.fromCharCode(97 + Math.floor(Math.random() * 26)))
           .join('') + Math.floor(1000 + Math.random() * 9000).toString(),
       admissionDate: new Date(formData.get('admissionDate') as string),
-      address: formData.get('address') as string,
-      picture: pictureData?.url,
       b2FileId: pictureData?.fileId || null,
       b2FileName: pictureData?.fileName || null,
+      classId: formData.get('classId') as string,
+      parentId: formData.get('parentId') as string,
+      schoolId: formData.get('schoolId') as string,
     }
+
+    console.log('Prepared student data:', studentData)
 
     if (!BACKEND_API_URL) {
       throw new Error('Missing BACKEND_API_URL environment variable')
@@ -282,6 +285,8 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify(studentData)
     })
+
+    console.log('Backend response status:', backendResponse)
 
     if (!backendResponse.ok) {
       // Clean up uploaded file if backend failed

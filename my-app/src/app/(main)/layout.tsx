@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/main/Sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { GetLoggedInUser } from '@/lib/actions/user.actions';
 import Loader from "@/components/main/Loader";
+import { UserProvider } from "../contexts/UserContext";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -82,7 +83,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </header>
 
             <main className="flex-1 overflow-auto !pt-8 ">
-              {children}
+              <UserProvider>
+                {children}
+              </UserProvider>
             </main>
           </div>
         </div>

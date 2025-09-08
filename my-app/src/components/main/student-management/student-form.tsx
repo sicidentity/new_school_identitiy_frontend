@@ -90,8 +90,6 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       formData.append('email', values.email);
       formData.append('phone', values.phone);
       formData.append('regNumber', values.regNumber);
-      
-      // ✅ Add schoolId from global state - user never inputs this!
       formData.append('schoolId', schoolId);
       
       // Add optional fields if they exist

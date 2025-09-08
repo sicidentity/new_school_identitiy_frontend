@@ -47,7 +47,6 @@ export async function GET() {
     }
 
     const classes = await response.json();
-    console.log('Successfully fetched classes:', classes);
     
     return NextResponse.json({
       success: true,

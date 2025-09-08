@@ -256,7 +256,6 @@ export async function GET(request: Request): Promise<NextResponse<ParentsApiResp
     }
     
     const data = await response.json();
-    console.log('Successfully fetched parents:', data);
     
     return NextResponse.json({
       success: true,
