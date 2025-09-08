@@ -63,7 +63,7 @@ export interface Student {
   regNumber: string;         // Unique
   schoolId: string;          // Foreign key, maps to 'school_id'
   attendances: Attendance[];
-  qrCode?: QRCode | null;
+  qrCodes?: QRCode | null;
   smsNotifications: SMSNotification[];
   class?: Class | null;
   parent?: Parent | null;

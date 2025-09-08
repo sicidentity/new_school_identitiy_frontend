@@ -50,10 +50,10 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
             const result = await getStudentById(studentId);
 
             if (result) {
-              console.log("Student data fetched successfully:", result.qrCode);
+              console.log("Student data fetched successfully:", result.qrCodes);
               setStudent(result);
               //newly added
-              setQrImg(result.qrCode?.url);
+              setQrImg(result.qrCodes?.url);
             }
           } else {
             console.warn("Failed to generate QR code");
