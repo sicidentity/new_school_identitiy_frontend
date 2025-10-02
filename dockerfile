@@ -21,6 +21,9 @@ RUN npm ci --only=production=false
 # Copy the rest of the app
 COPY . .
 
+# BUILD THE APP (This creates the .next directory)
+RUN npm run build
+
 # Generate Prisma Client (requires DATABASE_URL to be set at build time or in .env)
 # If you don't have access to DATABASE_URL at build time, see note below ⚠️
 # RUN npx prisma generate
