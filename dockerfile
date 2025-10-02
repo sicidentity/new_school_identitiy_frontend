@@ -23,7 +23,7 @@ COPY . .
 
 # Generate Prisma Client (requires DATABASE_URL to be set at build time or in .env)
 # If you don't have access to DATABASE_URL at build time, see note below ⚠️
-RUN npx prisma generate
+# RUN npx prisma generate
 
 # Switch to non-root user
 USER nextjs
