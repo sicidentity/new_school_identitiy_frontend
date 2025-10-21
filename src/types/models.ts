@@ -36,7 +36,7 @@ export interface Student {
   b2FileName?: string;
   class: Class;
   parent: Parent;
-  qrCodes: QRCode[];
+  qrCode: QRCode;
   attendances: Attendance[];
   smsNotifications: SMSNotification[];
   createdAt: Date;

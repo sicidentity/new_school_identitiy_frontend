@@ -44,7 +44,7 @@ export const getStudentById = async (id: string): Promise<Student> => {
       b2FileName: data.b2FileName,
       class: data.class,
       parent: data.parent,
-      qrCodes: data.qrCode || [],
+      qrCode: data.qrCode,
       attendances: data.attendances || [],
       smsNotifications: data.smsNotifications || [],
       createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
