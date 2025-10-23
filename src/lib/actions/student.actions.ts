@@ -27,7 +27,6 @@ export const getStudentById = async (id: string): Promise<Student> => {
 
     const data = await response.json();
 
-    // Transform the API response to match the Student type
     const student: Student = {
       id: data.id,
       name: data.name,
