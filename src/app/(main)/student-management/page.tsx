@@ -3,12 +3,18 @@
 import { useState } from 'react'
 import useSWR, { mutate } from 'swr'
 import { toast } from 'sonner'
-import { StudentForm } from "@/components/main/student-management/student-form"
+//import { StudentForm } from "@/components/main/student-management/student-form"
 import { DataTable } from "@/components/main/data-table/data-table"
 import Loader from "@/components/main/Loader";
 import { createStudentColumns } from "@/components/main/student-management/student-columns"
 import { Student } from "@/types/models"
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+
+const StudentForm = dynamic(
+  () => import("@/components/main/student-management/student-form").then(mod => ({ default: mod.StudentForm })),
+  { ssr: false, loading: () => <Loader size="1em" /> }
+)
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
