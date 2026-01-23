@@ -85,7 +85,7 @@ export interface UserApiResponse {
 
 // Student Interface
 export interface Student {
-  id?: number;
+  id?: string;
   name: string;
   age: number;
   classId: string;
@@ -123,7 +123,7 @@ export interface StudentRequest {
 }
 
 export interface TransformedStudent {
-  id: number;
+  id: string;
   name: string;
   regNumber: string;
   attendance: number;
@@ -190,7 +190,7 @@ export interface Parent {
 // Attendance Interface
 export interface Attendance {
   id: string;
-  studentId: number;
+  studentId: string;
   classId: string;
   checkInTime: Date | string | null;
   checkOutTime?: Date | string;
@@ -213,7 +213,7 @@ export interface ClassAttendanceData {
 export interface QRCode {
   id: string;
   code: string;
-  studentId: number;
+  studentId: string;
   url: string;
   student: Student;
   createdAt: Date | string;
@@ -223,7 +223,7 @@ export interface QRCode {
 // SMS Notification Interface
 export interface SMSNotification {
   id: string;
-  studentId: number;
+  studentId: string;
   parentId: string;
   status: string;
   message: string;
@@ -361,26 +361,6 @@ declare type UserResponse = {
   };
 };
 
-declare type CreateQrCodeResponse = {
-  studentId: string;
-  qrCode: QRCodeData;
-};
-
-declare type Student = {
-  id: number;
-  name: string;
-  email: string;
-  age: number;
-  picture: string;
-  classId: string;
-  parentId: number;
-  createdAt: string;
-  updatedAt: string;
-  class?: Class;
-  parent?: Parent;
-  qrCode: QRCodeData;
-};
-
 declare interface QRCodeData {
   id: string;
   code: string;
@@ -391,16 +371,14 @@ declare interface QRCodeData {
 
 declare interface CreateQrCodeResponse {
   message: string;
+  studentId: string;
   qrCode: QRCodeData;
 }
 
 declare interface GetQrCodeResponse {
   qrCode: string;
   url: string;
-
-
-  //added lines
-   validUntil?: string;
+  validUntil?: string;
   id?: string;
   studentId?: string;
 }

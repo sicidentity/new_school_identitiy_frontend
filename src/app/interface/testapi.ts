@@ -156,7 +156,7 @@ export interface ClassApiResponse {
   // Attendance Interface
   export interface Attendance {
     id: string;
-    studentId: number; // Matches Student ID type
+    studentId: string; // Updated to match new Student ID type (UUID)
     classId: string;
     checkInTime: Date;
     checkOutTime?: Date;

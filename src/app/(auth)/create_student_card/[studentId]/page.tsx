@@ -36,12 +36,6 @@ const StudentCard = ({ params }: { params: Promise<CardParamProps['params']> }) 
       setErrorMessage("");
 
       try {
-        const studentIdNumber = parseInt(studentId, 10);
-
-        if (isNaN(studentIdNumber)) {
-          throw new Error("Please enter a valid student ID number");
-        }
-
         if (studentId) {
           const createdQrCode = await generateQRCode(studentId);
           if (createdQrCode) {
