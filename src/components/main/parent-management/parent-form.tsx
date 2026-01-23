@@ -74,6 +74,7 @@ export function ParentForm({ onSubmit, isSubmitting = false }: ParentFormProps) 
         method: 'POST',
         body: formData,
       });
+      console.log('formdata:', response)
       if (!response.ok) {
         throw new Error('Failed to submit parent data');
       }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,11 +21,12 @@ import {
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { IoMail } from "react-icons/io5";
 import { FaLock } from "react-icons/fa6";
-import { CreateUser } from '@/lib/actions/user.actions';
+import { CreateUser, GetLoggedInUser } from '@/lib/actions/user.actions';
 
 const CreateUserPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [user, setUser] = useState<{ name: string; email: string; schoolId: string; avatarUrl?: string } | null | undefined>(null);
   const router = useRouter();
   const formSchema = CreateUserSchema();
 
@@ -39,12 +40,38 @@ const CreateUserPage = () => {
     },
   });
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const loggedInUser = await GetLoggedInUser();
+        setUser(loggedInUser);
+
+        if (!loggedInUser) {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error("Error fetching logged in user:", error);
+        router.push('/login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [router]);
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      const newUser = await CreateUser(data.name, data.email, data.password, data.role);
+      if(!user) {
+        setErrorMessage("Failed to send reset instructions. Please try again later.");
+        return;
+      }
+
+      const newUser = await CreateUser(data.name, data.email, user.schoolId, data.password, data.role);
+      console.log('Creating new user', newUser);
 
       if (newUser) {
         router.push('/');

@@ -144,6 +144,7 @@ export async function POST(request: Request) {
       throw new Error('Missing BACKEND_API_URL environment variable');
     }
 
+    console.log('testing')
     const backendResponse = await fetch(`${BACKEND_API_URL}/parents`, {
       method: 'POST',
       headers: {

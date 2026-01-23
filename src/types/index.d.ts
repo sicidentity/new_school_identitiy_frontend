@@ -318,6 +318,7 @@ declare interface AuthResponse {
   user?: {
     name: string;
     email: string;
+    schoolId: string;
   };
   message?: string;
 }

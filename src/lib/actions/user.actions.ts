@@ -262,7 +262,7 @@ export const VerifyEmail = async (email: string, verificationCode: string): Prom
   }
 };
 
-export const CreateUser = async (name: string, email: string, password: string, role: string): Promise<UserResponse> => {
+export const CreateUser = async (name: string, email: string, schoolId: string, password: string, role: string): Promise<UserResponse> => {
   try {
     if (!API_URL) {
       console.error("API URL is not configured");
@@ -282,7 +282,7 @@ export const CreateUser = async (name: string, email: string, password: string, 
         "Authorization": `Bearer ${token.value}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email, password, role }),
+      body: JSON.stringify({ name, email, schoolId, password, role }),
       cache: 'no-store'
     });
 
