@@ -42,13 +42,7 @@ const CreateStudentCardPage = () => {
     setSuccessMessage("");
 
     try {
-      const studentIdNumber = parseInt(data.studentId, 10);
-
-      console.log("Searching for student with ID:", studentIdNumber);
-      
-      if (isNaN(studentIdNumber)) {
-        throw new Error("Please enter a valid student ID number");
-      }
+      console.log("Searching for student with ID:", data.studentId);
 
       const result = await getStudentById(data.studentId);
 

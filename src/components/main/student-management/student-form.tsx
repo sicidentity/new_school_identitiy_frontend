@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from 'next/image'
 import { Parent } from '@/types/models'
+import { GetLoggedInUser } from '@/lib/actions/user.actions'
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -71,6 +72,13 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
 
   const handleSubmit = async (values: StudentFormValues) => {
     try {
+      // Get logged-in user to retrieve schoolId
+      const user = await GetLoggedInUser();
+      
+      if (!user?.schoolId) {
+        throw new Error('Unable to determine school. Please log in again.');
+      }
+
       // Create FormData object
       const formData = new FormData();
       
@@ -79,6 +87,7 @@ export function StudentForm({ onSubmit, isSubmitting = false, classes, parents =
       formData.append('age', values.age.toString());
       formData.append('classId', values.classId);
       formData.append('parentId', values.parentId);
+      formData.append('schoolId', user.schoolId); // Use schoolId from logged-in user
       formData.append('email', values.email);
       formData.append('phone', values.phone);
       formData.append('regNumber', values.regNumber);

@@ -255,6 +255,7 @@ export async function POST(request: Request) {
       age: Number(formData.get('age')),
       classId: formData.get('classId') as string,
       parentId: formData.get('parentId') as string,
+      schoolId: formData.get('schoolId') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
       regNumber:

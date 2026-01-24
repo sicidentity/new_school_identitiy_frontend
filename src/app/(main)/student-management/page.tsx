@@ -89,7 +89,7 @@ export default function StudentsPage() {
     <div className="flex items-center justify-center h-screen">
       <div className="text-red-500 text-center">
         <p>Failed to load data</p>
-        <p>{(error || classError)?.message}</p>
+        <p>{(error || classError || parentsError)?.message}</p>
       </div>
     </div>
   )
